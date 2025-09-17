@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+
+if [ -z $1 ]; then
+	echo "You forgot the device name!"
+	exit 1
+fi
+
+if [ -z $2 ]; then
+	echo "You forgot the iso path!"
+	exit 1
+fi
+
+# Set disk block name and iso paths
+DISK=$1
+ISO=$2
+
+sep(){
+	for i in {1..80}; do echo -n "-"; done
+	echo
+}
+
+# Formatting the disk
+echo "Zero-filling the disk..."
+blkdiscard -fz $DISK
+
+sep
+
+# Creating partitions
+echo "Creating partitions..."
+{
+	echo "n"
+	echo
+	echo
+	echo "+1G"
+	echo "0700"
+	echo "n"
+	echo
+	echo
+	echo
+	echo "0700"
+	echo "w"
+	echo "Y"
+} | gdisk $DISK || exit 1
+
+sep
+
+echo "Formatting partition No.1..."
+mkfs.fat "${DISK}1"
+echo "Formatting partition No.2..."
+mkfs.ntfs -Q "${DISK}2"
+
+sep
+
+# Mount ISO
+echo "Creating needed directories and mounting devices..."
+[ ! -d /mnt/iso ] && mkdir /mnt/iso
+mount $ISO /mnt/iso
+
+sep
+# Mount partitions
+[ ! -d /mnt/usb/p1 ] && mkdir -p /mnt/usb/p1
+[ ! -d /mnt/usb/p2 ] && mkdir -p /mnt/usb/p2
+mount "${DISK}1" /mnt/usb/p1
+mount "${DISK}2" /mnt/usb/p2
+[ ! -d /mnt/usb/p1/sources ] && mkdir /mnt/usb/p1/sources
+
+sep
+# Copy needed files to FAT32 formatted partition
+echo "Copying neeeded files..."
+cp /mnt/iso/* /mnt/usb/p1 2> /dev/null
+cp -r /mnt/iso/boot /mnt/usb/p1
+cp -r /mnt/iso/efi /mnt/usb/p1
+cp -r /mnt/iso/support /mnt/usb/p1
+cp /mnt/iso/sources/boot.wim /mnt/usb/p1/sources/
+
+# Copying all files to NTFS formatted partition
+cp -RT /mnt/iso /mnt/usb/p2
+
+sep
+# Sync block devices
+echo "Syncing devices..."
+sync
+
+# Unmount all devices
+echo "Umounting devices"
+umount /mnt/iso /mnt/usb/p{1,2}
+
+echo "Finished!"
+exit 0

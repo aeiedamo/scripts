@@ -19,9 +19,14 @@ sep(){
 	echo
 }
 
+echo "Installing gdisk, ntfs-3g..."
+pacman -Syu --needed --noconfirm gptfdisk ntfs-3g
+
+sep
+
 # Formatting the disk
 echo "Zero-filling the disk..."
-blkdiscard -fz $DISK
+blkdiscard -fz ${DISK}
 
 sep
 
@@ -40,7 +45,7 @@ echo "Creating partitions..."
 	echo "0700"
 	echo "w"
 	echo "Y"
-} | gdisk $DISK || exit 1
+} | gdisk ${DISK} || exit 1
 
 sep
 
@@ -54,7 +59,7 @@ sep
 # Mount ISO
 echo "Creating needed directories and mounting devices..."
 [ ! -d /mnt/iso ] && mkdir /mnt/iso
-mount $ISO /mnt/iso
+mount ${ISO} /mnt/iso
 
 sep
 # Mount partitions

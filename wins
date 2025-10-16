@@ -19,11 +19,6 @@ sep(){
 	echo
 }
 
-echo "Installing gdisk, ntfs-3g..."
-pacman -Syu --needed --noconfirm gptfdisk ntfs-3g
-
-sep
-
 # Formatting the disk
 echo "Zero-filling the disk..."
 blkdiscard -fz ${DISK}
@@ -62,6 +57,7 @@ echo "Creating needed directories and mounting devices..."
 mount ${ISO} /mnt/iso
 
 sep
+
 # Mount partitions
 [ ! -d /mnt/usb/p1 ] && mkdir -p /mnt/usb/p1
 [ ! -d /mnt/usb/p2 ] && mkdir -p /mnt/usb/p2
@@ -70,6 +66,7 @@ mount "${DISK}2" /mnt/usb/p2
 [ ! -d /mnt/usb/p1/sources ] && mkdir /mnt/usb/p1/sources
 
 sep
+
 # Copy needed files to FAT32 formatted partition
 echo "Copying neeeded files..."
 cp /mnt/iso/* /mnt/usb/p1 2> /dev/null

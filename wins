@@ -56,8 +56,6 @@ echo "Creating needed directories and mounting devices..."
 [ ! -d /mnt/iso ] && mkdir /mnt/iso
 mount ${ISO} /mnt/iso
 
-sep
-
 # Mount partitions
 [ ! -d /mnt/usb/p1 ] && mkdir -p /mnt/usb/p1
 [ ! -d /mnt/usb/p2 ] && mkdir -p /mnt/usb/p2

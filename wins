@@ -19,6 +19,8 @@ sep(){
 	echo
 }
 
+sep
+
 # Formatting the disk
 echo "Zero-filling the disk..."
 blkdiscard -fz ${DISK}
@@ -47,7 +49,7 @@ sep
 echo "Formatting partition No.1..."
 mkfs.fat "${DISK}1"
 echo "Formatting partition No.2..."
-mkfs.ntfs -Q "${DISK}2"
+mkntfs -Q "${DISK}2"
 
 sep
 
@@ -60,7 +62,7 @@ mount ${ISO} /mnt/iso
 [ ! -d /mnt/usb/p1 ] && mkdir -p /mnt/usb/p1
 [ ! -d /mnt/usb/p2 ] && mkdir -p /mnt/usb/p2
 mount "${DISK}1" /mnt/usb/p1
-mount "${DISK}2" /mnt/usb/p2
+mount -t ntfs3 "${DISK}2" /mnt/usb/p2
 [ ! -d /mnt/usb/p1/sources ] && mkdir /mnt/usb/p1/sources
 
 sep

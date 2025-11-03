@@ -55,15 +55,14 @@ sep
 
 # Mount ISO
 echo "Creating needed directories and mounting devices..."
-[ ! -d /mnt/iso ] && mkdir /mnt/iso
+mkdir -p /mnt/iso
 mount ${ISO} /mnt/iso
 
 # Mount partitions
-[ ! -d /mnt/usb/p1 ] && mkdir -p /mnt/usb/p1
-[ ! -d /mnt/usb/p2 ] && mkdir -p /mnt/usb/p2
+mkdir -p /mnt/usb/p{1,2}
 mount "${DISK}1" /mnt/usb/p1
-mount -t ntfs3 "${DISK}2" /mnt/usb/p2
-[ ! -d /mnt/usb/p1/sources ] && mkdir /mnt/usb/p1/sources
+mount "${DISK}2" /mnt/usb/p2
+mkdir -p /mnt/usb/p1/sources
 
 sep
 

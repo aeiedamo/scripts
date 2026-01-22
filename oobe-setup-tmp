@@ -33,8 +33,8 @@ pacstrap -iKM /mnt
 
 genfstab -U /mnt | tee -a /mnt/etc/fstab
 
-cp ./oobe-install /mnt/usr/local/bin/
-arch-chroot -S /mnt /usr/local/bin/oobe-install
-rm -f /mnt/usr/local/bin/oobe-install
+cp ./oobe-install-tmp /mnt/usr/local/bin/
+arch-chroot -S /mnt /usr/local/bin/oobe-install-tmp
+rm -f /mnt/usr/local/bin/oobe-install-tmp
 
-cp ./oobe-postinstall /mnt/usr/local/bin/
+cp ./oobe-postinstall-tmp /mnt/usr/local/bin/

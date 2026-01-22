@@ -49,7 +49,7 @@ ukify genkey --config /etc/kernel/uki.conf
 
 sbsign --key /etc/kernel/secure-boot-private-key.pem --cert /etc/kernel/secure-boot-certificate.pem --output /usr/lib/systemd/boot/efi/systemd-bootx64.efi.signed /usr/lib/systemd/boot/efi/systemd-bootx64.efi
 
-bootctl install --variable no --secure-boot-auto-enroll yes --certificate /etc/kernel/secure-boot-certificate.pem --private-key /etc/kernel/secure-boot-private-key.pem
+bootctl install --variables no --secure-boot-auto-enroll yes --certificate /etc/kernel/secure-boot-certificate.pem --private-key /etc/kernel/secure-boot-private-key.pem
 
 printf 'secure-boot-enroll force\n' | tee /boot/loader/loader.conf
 

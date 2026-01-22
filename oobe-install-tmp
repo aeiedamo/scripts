@@ -46,7 +46,7 @@ sbsign --key /etc/kernel/secure-boot-private-key.pem --cert /etc/kernel/secure-b
 
 bootctl install --variables no --secure-boot-auto-enroll yes --certificate /etc/kernel/secure-boot-certificate.pem --private-key /etc/kernel/secure-boot-private-key.pem
 
-printf 'secure-boot-enroll force\n' | tee /boot/loader/loader.conf
+printf 'secure-boot-enroll force\n' | tee /efi/loader/loader.conf
 
 pacman -Syu gnome-initial-setup alsa-firmware alsa-utils dconf-editor file-roller gnome-browser-connector gnome-characters gnome-remote-desktop gnome-shell-extension-appindicator gnome-themes-extra gnome-user-share gst-plugin-pipewire gst-plugins-bad gst-plugins-ugly guestfs-tools gvfs-afc gvfs-google gvfs-gphoto2 gvfs-mtp gvfs-nfs intel-media-sdk libappindicator libayatana-appindicator networkmanager noto-fonts-cjk noto-fonts-extra orca pipewire-alsa plymouth proton-vpn-gtk-app qemu-full qemu-user-static-binfmt rygel sof-firmware ttf-noto-nerd tuned-ppd virt-manager vulkan-intel zram-generator
 

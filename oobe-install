@@ -1,0 +1,78 @@
+#!/usr/bin/bash
+
+CNTR1='/dev/nvme0'
+CNTR2='/dev/nvme1'
+DISK1="${CNTR1}n1"
+DISK2="${CNTR2}n1"
+BOOT="${DISK1}p1"
+CRPTP1="${DISK1}p2"
+CRPTP2="${DISK2}p1"
+ROOTP1='rootp1'
+ROOTP2='rootp2'
+
+ln -fs /usr/share/zoneinfo/Asia/Riyadh /etc/localtime
+hwclock -uw
+
+sed -i -e '/^#en_US.UTF-8/s/^#//' -e '/^#ar_EG.UTF-8/s/^#//' /etc/locale.gen
+locale-gen
+printf "LANG=en_US.UTF-8\n" | tee /etc/locale.conf
+
+printf "KEYMAP=us\nFONT=default8x16\n" | tee /etc/vconsole.conf
+printf "aeiedamo\n" | tee /etc/hostname
+
+printf "$ROOTP1\tUUID=$(lsblk -dno UUID $CRPTP1)\tnone\ttpm2-device=auto,tpm2-measure-pcr=yes\n$ROOTP2\tUUID=$(lsblk -dno UUID $CRPTP2)\tnone\ttpm2-device=auto,tpm2-measure-pcr=yes\n" | tee /etc/crypttab.initramfs
+
+sed -i -e '/^#NoExtract/s/^#// ' -e '/^NoExtract/s/$/ boot\/intel-ucode.img/' -e '/^#Color/s/^#//' -e '/^#Verbose/s/^#//' /etc/pacman.conf
+printf "Server = https://mirror.pkgbuild.com/\$repo/os/\$arch\n" | tee /etc/pacman.d/mirrorlist
+sed -i -e '/^#MAKEFLAGS/s/^#//' -e 's/^MAKEFLAGS.\*$/MAKEFLAGS="-j8"/' -e '/^#BUILD/s/^#//' -e '/^OPTIONS/s/debug/!debug/' /etc/makepkg.conf
+
+pacman -Syu linux linux-headers apparmor base-devel bash-completion devtools dosfstools edk2-shell efibootmgr fwupd intel-ucode linux-firmware linux-tools-meta man-db nvme-cli sbsigntools snap-pac systemd-ukify wireless-regdb
+
+rm -f /boot/*.img
+mkdir -p /etc/cmdline.d
+
+sed -i -e '/^HOOKS/s/systemd/& btrfs/' -e '/^HOOKS/s/keymap/plymouth/' -e '/^HOOKS/s/filesystems/sd-encrypt &/' /etc/mkinitcpio.conf
+
+sed -i -e '/^default_image/s//#&/' -e '/^#default_uki/s/^#//' /etc/mkinitcpio.d/linux.preset
+
+printf "root=UUID=$(lsblk -dno UUID /dev/mapper/$ROOTP1) rw rootflags=compress=zstd,subvol=/@\n" | tee /etc/cmdline.d/0-root.conf
+
+printf "lsm=landlock,lockdown,yama,integrity,apparmor,bpf\n" | tee /etc/cmdline.d/1-security.conf
+
+printf 'quiet splash\n' | tee /etc/cmdline.d/2-splash.conf
+
+sed -i -e '/SA/s/^#//' /etc/conf.d/wireless-regdom
+
+printf '[UKI]\nSecureBootSigningTool=sbsign\nSecureBootPrivateKey=/etc/kernel/secure-boot-private-key.pem\nSecureBootCertificate=/etc/kernel/secure-boot-certificate.pem\n[PCRSignature:initrd]\nPCRPrivateKey=/etc/systemd/tpm2-pcr-private-key.pem\nPCRPublicKey=/etc/systemd/tpm2-pcr-public-key.pem\n' | tee /etc/kernel/uki.conf
+
+ukify genkey --config /etc/kernel/uki.conf
+
+sbsign --key /etc/kernel/secure-boot-private-key.pem --cert /etc/kernel/secure-boot-certificate.pem --output /usr/lib/systemd/boot/efi/systemd-bootx64.efi.signed /usr/lib/systemd/boot/efi/systemd-bootx64.efi
+
+bootctl install --variable no --secure-boot-auto-enroll yes --certificate /etc/kernel/secure-boot-certificate.pem --private-key /etc/kernel/secure-boot-private-key.pem
+
+printf 'secure-boot-enroll force\n' | tee /boot/loader/loader.conf
+
+pacman -Syu gnome-initial-setup alsa-firmware alsa-utils dconf-editor file-roller gnome-browser-connector gnome-characters gnome-remote-desktop gnome-shell-extension-appindicator gnome-themes-extra gnome-user-share gst-plugin-pipewire gst-plugins-bad gst-plugins-ugly guestfs-tools gvfs-afc gvfs-google gvfs-gphoto2 gvfs-mtp gvfs-nfs intel-media-sdk libappindicator libayatana-appindicator networkmanager noto-fonts-cjk noto-fonts-extra orca pipewire-alsa plymouth proton-vpn-gtk-app qemu-full qemu-user-static-binfmt rygel sof-firmware ttf-noto-nerd tuned-ppd virt-manager vulkan-intel zram-generator
+
+pacman -Syu ardour arch-wiki-docs baobab bluez-cups bluez-utils breeze btrfs-assistant calf celluloid cronie cups-pdf dnsmasq easyeffects fastfetch firefox firewalld ghostty gimp github-cli gnome-software gparted hunspell-en_us lazygit libreoffice-fresh loupe lsp-plugins-lv2 mda.lv2 net-tools obsidian obs-studio papers qalculate-gtk qbittorrent qt6ct radvd resources rnote rustup snapshot swtpm telegram-desktop throttled thunderbird trash-cli wl-clipboard yt-dlp zam-plugins-lv2 zed
+
+systemctl enable apparmor bluetooth cronie cups firewalld fstrim.timer fwupd-refresh.timer gdm gnome-remote-desktop libvirtd NetworkManager sshd systemd-resolved systemd-timesyncd throttled tuned tuned-ppd virtnetworkd virtqemud virtstoraged
+
+useradd -c 'AlaEldin Mohamed' -G audio,disk,kvm,libvirt,log,storage,wheel -m am
+
+passwd -dl root
+
+passwd am
+
+printf '%s\n' '%wheel ALL=(ALL:ALL) ALL' | tee /etc/sudoers.d/01-wheel
+
+printf '[zram0]\nzram-size=ram\ncompression-algorithm=zstd\n' | tee /etc/systemd/zram-generator.conf
+
+printf 'ListenAddress aeiedamo.local\n' | tee /etc/ssh/sshd_config.d/00-local.conf
+
+printf "export EDITOR='vim' VISUAL='vim'\n" | tee /etc/profile.d/01-editor.sh
+
+printf "export XDG_CONFIG_HOME=\"\$HOME/.config\"\n" | tee /etc/profile.d/02-xdg.sh
+
+history -c

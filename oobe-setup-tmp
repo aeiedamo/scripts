@@ -1,0 +1,40 @@
+#!/usr/bin/bash
+
+DISK='/dev/sda'
+BOOT="${DISK}1"
+CRPT="${DISK}2"
+ROOT='tmp'
+
+pacman -Syu
+rm -fr /var/cache/pacman/pkg/download-*
+pacman -Scc
+
+blkdiscard -fz $DISK
+partprobe $DISK
+
+sgdisk -n 1:0:+1G -c 1:'BOOT' -t 1:ef00 -n 2:0:0 -c 2:'ROOT' -t 2:8304 $DISK
+
+mkfs.fat -F 32 -n 'BOOT' $BOOT
+
+cryptsetup luksFormat --label 'CRPT' -q $CRPT
+cryptsetup --allow-discards --persistent open $CRPT $ROOT
+
+mkfs.btrfs -L 'ROOT' -m single /dev/mapper/$ROOT
+mount -o compress=zstd /dev/mapper/$ROOT /mnt
+btrfs subvolume create /mnt/@ /mnt/@home /mnt/@var /mnt/@snapshots
+umount /mnt
+mount -o compress=zstd,subvol=/@ /dev/mapper/$ROOT /mnt
+mount -m -o compress=zstd,subvol=/@home /dev/mapper/$ROOT /mnt/home
+mount -m -o compress=zstd,subvol=/@var /dev/mapper/$ROOT /mnt/var
+mount -m -o compress=zstd,subvol=/@snapshots /dev/mapper/$ROOT /mnt/.snapshots
+mount -m -o nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077 $BOOT /mnt/efi
+
+pacstrap -iKM /mnt
+
+genfstab -U /mnt | tee -a /mnt/etc/fstab
+
+cp ./oobe-install /mnt/usr/local/bin/
+arch-chroot -S /mnt /usr/local/bin/oobe-install
+rm -f /mnt/usr/local/bin/oobe-install
+
+cp ./oobe-postinstall /mnt/usr/local/bin/

@@ -1,0 +1,38 @@
+#!/usr/bin/bash
+
+DISK='/dev/sda'
+BOOT="${DISK}1"
+CRPT="${DISK}2"
+ROOT='tmp'
+
+bootctl remove
+
+rm -f /efi/EFI/Linux/arch-linux.efi
+
+mkdir -p /efi/EFI/BOOT
+
+sed -i -e '/^default_uki/s/Linux\/arch-linux.efi/BOOT\/BOOTX64.EFI/' /etc/mkinitcpio.d/linux.preset
+
+mkinitcpio -P
+
+systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-public-key /etc/systemd/tpm2-pcr-public-key.pem --tpm2-public-key-pcrs 11 --tpm2-pcrs 7+15:sha256=0000000000000000000000000000000000000000000000000000000000000000 $CRPT
+
+cd /tmp
+
+git clone --depth=1 'https://github.com/aeiedamo/configs'
+
+mv ./configs/systemd/logind.conf.d /etc/systemd/
+mv ./configs/fonts/local.conf /etc/fonts/
+mv ./configs/profile/* /etc/profile.d/
+mv ./configs/fwupd/fwupd.conf /etc/fwupd/
+mv ./configs/gdm/gdm /etc/dconf/profile/
+mv ./configs/gdm/gdm.d /etc/dconf/db/
+dconf update
+
+umount /.snapshots
+rm -fr /.snapshots
+snapper -c root create-config /
+snapper -c home create-config /home
+btrfs subvolume delete /.snapshots
+mkdir /.snapshots
+systemctl enable snapper-cleanup.timer

@@ -30,7 +30,7 @@ cryptsetup --allow-discards --persistent open $CRPTP1 $ROOTP1
 cryptsetup luksFormat --label 'CRPT' -q $CRPTP2
 cryptsetup --allow-discards --persistent open $CRPTP2 $ROOTP2
 
-mkfs.btrfs -L 'ROOT' -m single /dev/mapper/$ROOTP1 /dev/mapper/$ROOTP2
+mkfs.btrfs -L 'ROOT' -d raid0 -m raid0 /dev/mapper/$ROOTP1 /dev/mapper/$ROOTP2
 mount -o compress=zstd /dev/mapper/$ROOTP1 /mnt
 btrfs subvolume create /mnt/@ /mnt/@home /mnt/@var /mnt/@snapshots
 umount /mnt
@@ -40,7 +40,7 @@ mount -m -o compress=zstd,subvol=/@var /dev/mapper/$ROOTP1 /mnt/var
 mount -m -o compress=zstd,subvol=/@snapshots /dev/mapper/$ROOTP1 /mnt/.snapshots
 mount -m -o nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077 $BOOT /mnt/efi
 
-pacstrap -iKM /mnt
+pacstrap -iKM /mnt base iptables-nft
 
 genfstab -U /mnt | tee -a /mnt/etc/fstab
 

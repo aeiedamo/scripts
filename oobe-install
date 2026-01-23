@@ -26,7 +26,7 @@ sed -i -e '/^#NoExtract/s/^#// ' -e '/^NoExtract/s/$/ boot\/intel-ucode.img/' -e
 printf "Server = https://mirror.pkgbuild.com/\$repo/os/\$arch\n" | tee /etc/pacman.d/mirrorlist
 sed -i -e '/^#MAKEFLAGS/s/^#//' -e 's/^MAKEFLAGS.\*$/MAKEFLAGS="-j8"/' -e '/^#BUILD/s/^#//' -e '/^OPTIONS/s/debug/!debug/' /etc/makepkg.conf
 
-pacman -Syu linux linux-headers apparmor base-devel bash-completion devtools dosfstools edk2-shell efibootmgr fwupd intel-ucode linux-firmware linux-tools-meta man-db nvme-cli sbsigntools snap-pac systemd-ukify wireless-regdb
+pacman -Syu linux linux-headers apparmor base-devel bash-completion devtools dosfstools edk2-shell efibootmgr fwupd intel-ucode linux-firmware linux-tools-meta man-db mkinitcpio nvme-cli sbsigntools snap-pac systemd-ukify wireless-regdb
 
 rm -f /boot/*.img
 mkdir -p /etc/cmdline.d
@@ -53,9 +53,9 @@ bootctl install --variables no --secure-boot-auto-enroll yes --certificate /etc/
 
 printf 'secure-boot-enroll force\n' | tee /efi/loader/loader.conf
 
-pacman -Syu gnome-initial-setup alsa-firmware alsa-utils dconf-editor file-roller gnome-browser-connector gnome-characters gnome-remote-desktop gnome-shell-extension-appindicator gnome-themes-extra gnome-user-share gst-plugin-pipewire gst-plugins-bad gst-plugins-ugly guestfs-tools gvfs-afc gvfs-google gvfs-gphoto2 gvfs-mtp gvfs-nfs intel-media-sdk libappindicator libayatana-appindicator networkmanager noto-fonts-cjk noto-fonts-extra orca pipewire-alsa plymouth proton-vpn-gtk-app qemu-full qemu-user-static-binfmt rygel sof-firmware ttf-noto-nerd tuned-ppd virt-manager vulkan-intel zram-generator
+pacman -Syu gnome-initial-setup alsa-firmware alsa-utils dconf-editor file-roller gnome-browser-connector gnome-characters gnome-keyring gnome-remote-desktop gnome-shell-extension-appindicator gnome-themes-extra gnome-user-share gst-plugin-pipewire gst-plugins-bad gst-plugins-ugly guestfs-tools gvfs-afc gvfs-google gvfs-gphoto2 gvfs-mtp gvfs-nfs intel-media-sdk libappindicator libayatana-appindicator networkmanager noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra orca pipewire-alsa plymouth proton-vpn-gtk-app qemu-full qemu-user-static-binfmt rygel sof-firmware ttf-noto-nerd tuned-ppd virt-manager vulkan-intel zram-generator
 
-pacman -Syu ardour arch-wiki-docs baobab bluez-cups bluez-utils breeze btrfs-assistant calf celluloid cronie cups-pdf dnsmasq easyeffects fastfetch firefox firewalld ghostty gimp github-cli gnome-software gparted hunspell-en_us lazygit libreoffice-fresh loupe lsp-plugins-lv2 mda.lv2 net-tools obsidian obs-studio papers qalculate-gtk qbittorrent qt6ct radvd resources rnote rustup snapshot swtpm telegram-desktop throttled thunderbird trash-cli wl-clipboard yt-dlp zam-plugins-lv2 zed
+pacman -Syu ardour arch-wiki-docs baobab bluez-cups bluez-utils calf celluloid cronie cups-pdf dnsmasq easyeffects fastfetch firefox firewalld ghostty gimp github-cli gnome-software gparted hunspell-en_us lazygit libreoffice-fresh loupe lsp-plugins-lv2 mda.lv2 net-tools obsidian obs-studio papers qalculate-gtk qbittorrent qt6-multimedia-gstreamer radvd resources rnote rustup snapshot swtpm telegram-desktop throttled thunderbird trash-cli wl-clipboard yt-dlp zam-plugins-lv2 zed
 
 systemctl enable apparmor bluetooth cronie cups firewalld fstrim.timer fwupd-refresh.timer gdm gnome-remote-desktop libvirtd NetworkManager sshd systemd-resolved systemd-timesyncd throttled tuned tuned-ppd virtnetworkd virtqemud virtstoraged
 

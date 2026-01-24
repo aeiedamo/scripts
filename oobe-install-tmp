@@ -15,7 +15,7 @@ printf "LANG=en_US.UTF-8\n" | tee /etc/locale.conf
 printf "KEYMAP=us\nFONT=default8x16\n" | tee /etc/vconsole.conf
 printf "aeiedamo\n" | tee /etc/hostname
 
-printf "$ROOT\tUUID=$(lsblk -dno UUID $CRPT)\tnone\ttpm2-device=auto,tpm2-measure-pcr=yes\n" | tee /etc/crypttab.initramfs
+printf "$ROOT\tUUID=$(lsblk -dno UUID $CRPT)\tnone\ttpm2-device=/dev/tpmrm0,tpm2-measure-pcr=yes\n" | tee /etc/crypttab.initramfs
 
 sed -i -e '/^#NoExtract/s/^#// ' -e '/^NoExtract/s/$/ boot\/intel-ucode.img/' -e '/^#Color/s/^#//' -e '/^#Verbose/s/^#//' /etc/pacman.conf
 printf "Server = https://mirror.pkgbuild.com/\$repo/os/\$arch\n" | tee /etc/pacman.d/mirrorlist
@@ -38,7 +38,7 @@ printf 'quiet splash\n' | tee /etc/cmdline.d/2-splash.conf
 
 sed -i -e '/SA/s/^#//' /etc/conf.d/wireless-regdom
 
-printf '[UKI]\nSecureBootSigningTool=sbsign\nSecureBootPrivateKey=/etc/kernel/secure-boot-private-key.pem\nSecureBootCertificate=/etc/kernel/secure-boot-certificate.pem\n[PCRSignature:initrd]\nPCRPrivateKey=/etc/systemd/tpm2-pcr-private-key.pem\nPCRPublicKey=/etc/systemd/tpm2-pcr-public-key.pem\n' | tee /etc/kernel/uki.conf
+printf '[UKI]\nSecureBootSigningTool=sbsign\nSecureBootPrivateKey=/etc/kernel/secure-boot-private-key.pem\nSecureBootCertificate=/etc/kernel/secure-boot-certificate.pem\nSignKernel=false\n[PCRSignature:initrd]\nPCRPrivateKey=/etc/systemd/tpm2-pcr-private-key.pem\nPCRPublicKey=/etc/systemd/tpm2-pcr-public-key.pem\n' | tee /etc/kernel/uki.conf
 
 ukify genkey --config /etc/kernel/uki.conf
 
@@ -54,11 +54,15 @@ pacman -Syu ardour arch-wiki-docs baobab bluez-cups bluez-utils breeze btrfs-ass
 
 systemctl enable apparmor bluetooth cronie cups firewalld fstrim.timer fwupd-refresh.timer gdm gnome-remote-desktop libvirtd NetworkManager sshd systemd-resolved systemd-timesyncd throttled tuned tuned-ppd virtnetworkd virtqemud virtstoraged
 
+systemctl mask systemd-pcrproduct systemd-tpm2-setup systemd-tpm2-setup-early
+
 useradd -c 'AlaEldin Mohamed' -G audio,disk,kvm,libvirt,log,storage,wheel -m am
 
 passwd -dl root
 
 passwd am
+
+printf 'options psmouse synaptics_intertouch=1\n' | tee /etc/modprobe.d/psmouse.conf
 
 printf '%s\n' '%wheel ALL=(ALL:ALL) ALL' | tee /etc/sudoers.d/01-wheel
 

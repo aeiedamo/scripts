@@ -1,20 +1,13 @@
 #!/usr/bin/bash
 
-CNTR1='/dev/nvme0'
-CNTR2='/dev/nvme1'
-DISK1="${CNTR1}n1"
-DISK2="${CNTR2}n1"
-BOOT="${DISK1}p1"
+DISK1="$(realpath /dev/disk/by-id/nvme-nvme.1e4b-30303335363230303030303532-4e452d3154422032323432-00000001)"
+DISK2="$(realpath /dev/disk/by-id/nvme-eui.e8238fa6bf530001001b448b47f32f0c)"
 CRPTP1="${DISK1}p2"
 CRPTP2="${DISK2}p1"
-ROOTP1='rootp1'
-ROOTP2='rootp2'
+
+rm -fr /boot/EFI
 
 bootctl remove
-
-rm -f /efi/EFI/Linux/arch-linux.efi
-
-mkdir -p /efi/EFI/BOOT
 
 sed -i -e '/^default_uki/s/Linux\/arch-linux.efi/BOOT\/BOOTX64.EFI/' /etc/mkinitcpio.d/linux.preset
 
@@ -22,6 +15,8 @@ mkinitcpio -P
 
 systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-public-key /etc/systemd/tpm2-pcr-public-key.pem --tpm2-public-key-pcrs 11 --tpm2-pcrs 7+15:sha256=0000000000000000000000000000000000000000000000000000000000000000 $CRPTP1
 systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-public-key /etc/systemd/tpm2-pcr-public-key.pem --tpm2-public-key-pcrs 11 --tpm2-pcrs 7+15:sha256=0000000000000000000000000000000000000000000000000000000000000000 $CRPTP2
+
+sbsign --key /etc/kernel/secure-boot-private-key.pem --cert /etc/kernel/secure-boot-certificate.pem /usr/lib/fwupd/efi/fwupdx64.efi
 
 cd /tmp
 

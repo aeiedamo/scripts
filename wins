@@ -28,21 +28,7 @@ blkdiscard -fz ${DISK}
 sep
 
 # Creating partitions
-echo "Creating partitions..."
-{
-	echo "n"
-	echo
-	echo
-	echo "+1G"
-	echo "0700"
-	echo "n"
-	echo
-	echo
-	echo
-	echo "0700"
-	echo "w"
-	echo "Y"
-} | gdisk ${DISK} || exit 1
+sgdisk -n 1:0:+1G -t 1:0700 -n 2:0:0 -t 2:0700 $DISK
 
 sep
 

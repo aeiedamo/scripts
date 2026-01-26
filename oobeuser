@@ -1,5 +1,8 @@
 #!/usr/bin/bash
 
+sudo oobepostinstall
+sudo rm -f /usr/local/bin/oobepostinstall
+
 cd /tmp
 
 gsettings set org.gnome.desktop.interface font-name 'Sans 10'
@@ -16,5 +19,3 @@ install -o am ./configs/user/ghostty $XDG_CONFIG_HOME/ghostty/config
 git clone --depth 1 'https://aur.archlinux.org/yay-bin.git'
 cd ./yay-bin
 makepkg -sic
-
-sudo rm -f /usr/local/bin/oobe-postinstall

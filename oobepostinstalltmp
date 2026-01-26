@@ -1,21 +1,21 @@
 #!/usr/bin/bash
 
-DISK='/dev/sda'
+DISK="/dev/sda"
 BOOT="${DISK}1"
 CRPT="${DISK}2"
-ROOT='tmp'
+ROOT='root'
+
+rm -fr /boot/EFI
 
 bootctl remove
-
-rm -f /efi/EFI/Linux/arch-linux.efi
-
-mkdir -p /efi/EFI/BOOT
 
 sed -i -e '/^default_uki/s/Linux\/arch-linux.efi/BOOT\/BOOTX64.EFI/' /etc/mkinitcpio.d/linux.preset
 
 mkinitcpio -P
 
 systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-public-key /etc/systemd/tpm2-pcr-public-key.pem --tpm2-public-key-pcrs 11 --tpm2-pcrs 7+15:sha256=0000000000000000000000000000000000000000000000000000000000000000 $CRPT
+
+sbsign --key /etc/kernel/secure-boot-private-key.pem --cert /etc/kernel/secure-boot-certificate.pem /usr/lib/fwupd/efi/fwupdx64.efi
 
 cd /tmp
 
@@ -32,7 +32,10 @@ dconf update
 umount /.snapshots
 rm -fr /.snapshots
 snapper -c root create-config /
+snapper -c root set-config 'ALLOW_GROUPS=wheel' 'SYNC_ACL=yes' 'TIMELINE_LIMIT_HOURLY=3' 'TIMELINE_LIMIT_DAILY=3' 'TIMELINE_LIMIT_MONTHLY=0' 'TIMELINE_LIMIT_YEARLY=0' 'NUMBER_LIMIT=15'
 snapper -c home create-config /home
+snapper -c home set-config 'ALLOW_GROUPS=wheel' 'SYNC_ACL=yes' 'TIMELINE_LIMIT_HOURLY=3' 'TIMELINE_LIMIT_DAILY=3' 'TIMELINE_LIMIT_MONTHLY=0' 'TIMELINE_LIMIT_YEARLY=0' 'NUMBER_LIMIT=15'
 btrfs subvolume delete /.snapshots
 mkdir /.snapshots
-systemctl enable snapper-cleanup.timer
+mount -a
+systemctl enable snapper-boot.timer snapper-cleanup.timer

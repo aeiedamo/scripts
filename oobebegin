@@ -33,7 +33,7 @@ mount -m -o compress=zstd,subvol=/@var /dev/mapper/$ROOTP1 /mnt/var
 mount -m -o compress=zstd,subvol=/@snapshots /dev/mapper/$ROOTP1 /mnt/.snapshots
 mount -m -o nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077 $BOOT /mnt/boot
 
-pacstrap -KM /mnt base iptables-nft
+pacstrap -KM /mnt base iptables
 
 genfstab -U /mnt | tee -a /mnt/etc/fstab
 

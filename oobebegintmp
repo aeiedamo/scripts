@@ -1,13 +1,9 @@
 #!/usr/bin/bash
 
-DISK='/dev/sda'
-BOOT="${DISK}1"
-CRPT="${DISK}2"
-ROOT='tmp'
-
-pacman -Syu
-rm -fr /var/cache/pacman/pkg/download-*
-pacman -Scc
+DISK="/dev/sda"
+BOOT="${DISK1}1"
+CRPT="${DISK1}2"
+ROOT='root'
 
 blkdiscard -fz $DISK
 partprobe $DISK
@@ -19,7 +15,7 @@ mkfs.fat -F 32 -n 'BOOT' $BOOT
 cryptsetup luksFormat --label 'CRPT' -q $CRPT
 cryptsetup --allow-discards --persistent open $CRPT $ROOT
 
-mkfs.btrfs -L 'ROOT' -m single /dev/mapper/$ROOT
+mkfs.btrfs -L 'ROOT' -d single -m single /dev/mapper/$ROOT
 mount -o compress=zstd /dev/mapper/$ROOT /mnt
 btrfs subvolume create /mnt/@ /mnt/@home /mnt/@var /mnt/@snapshots
 umount /mnt
@@ -27,14 +23,18 @@ mount -o compress=zstd,subvol=/@ /dev/mapper/$ROOT /mnt
 mount -m -o compress=zstd,subvol=/@home /dev/mapper/$ROOT /mnt/home
 mount -m -o compress=zstd,subvol=/@var /dev/mapper/$ROOT /mnt/var
 mount -m -o compress=zstd,subvol=/@snapshots /dev/mapper/$ROOT /mnt/.snapshots
-mount -m -o nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077 $BOOT /mnt/efi
+mount -m -o nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077 $BOOT /mnt/boot
 
-pacstrap -iKM /mnt
+pacstrap -KM /mnt base iptables
 
 genfstab -U /mnt | tee -a /mnt/etc/fstab
 
-cp ./oobe-install-tmp /mnt/usr/local/bin/
-arch-chroot -S /mnt /usr/local/bin/oobe-install-tmp
-rm -f /mnt/usr/local/bin/oobe-install-tmp
+install -m 0700 -p ./oobeinstalltmp /mnt/usr/local/bin/
 
-cp ./oobe-postinstall-tmp /mnt/usr/local/bin/
+arch-chroot -S /mnt /usr/local/bin/oobeinstalltmp
+rm -f /mnt/usr/local/bin/oobeinstalltmp
+
+install -m 0755 -p ./oobepostinstalltmp /mnt/usr/local/bin/
+install -m 0755 -p ./oobeusertmp /mnt/usr/local/bin/
+
+systemctl reboot --firmware-setup

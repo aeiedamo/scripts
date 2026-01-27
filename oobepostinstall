@@ -18,16 +18,6 @@ systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-public-key /etc/systemd/tpm
 
 sbsign --key /etc/kernel/secure-boot-private-key.pem --cert /etc/kernel/secure-boot-certificate.pem /usr/lib/fwupd/efi/fwupdx64.efi
 
-git clone --depth 1 'https://github.com/aeiedamo/configs' /tmp/configs
-
-mv /tmp/configs/systemd/logind.conf.d /etc/systemd/
-mv /tmp/configs/fonts/local.conf /etc/fonts/
-mv /tmp/configs/profile/* /etc/profile.d/
-mv /tmp/configs/fwupd/fwupd.conf /etc/fwupd/
-mv /tmp/configs/gdm/gdm /etc/dconf/profile/
-mv /tmp/configs/gdm/gdm.d /etc/dconf/db/
-dconf update
-
 umount /.snapshots
 rm -fr /.snapshots
 snapper -c root create-config /
@@ -38,3 +28,13 @@ btrfs subvolume delete /.snapshots
 mkdir /.snapshots
 mount -a
 systemctl enable snapper-boot.timer snapper-cleanup.timer
+
+git clone --depth 1 'https://github.com/aeiedamo/configs' /tmp/configs
+
+mv /tmp/configs/systemd/logind.conf.d /etc/systemd/
+mv /tmp/configs/fonts/local.conf /etc/fonts/
+mv /tmp/configs/profile/* /etc/profile.d/
+mv /tmp/configs/fwupd/fwupd.conf /etc/fwupd/
+mv /tmp/configs/gdm/gdm /etc/dconf/profile/
+mv /tmp/configs/gdm/gdm.d /etc/dconf/db/
+dconf update

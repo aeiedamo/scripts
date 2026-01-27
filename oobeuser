@@ -3,8 +3,6 @@
 sudo oobepostinstall
 sudo rm -f /usr/local/bin/oobepostinstall
 
-cd /tmp
-
 gsettings set org.gnome.desktop.interface font-name 'Sans 10'
 gsettings set org.gnome.desktop.interface document-font-name 'Serif 10'
 gsettings set org.gnome.desktop.interface monospace-font-name 'Monospace 10'
@@ -12,12 +10,11 @@ gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
 gsettings set org.gnome.desktop.media-handling automount false
 gsettings set org.gnome.desktop.media-handling automount-open false
 
+cp /tmp/configs/user/ghostty $XDG_CONFIG_HOME/ghostty/config
 firefox &
-install -o am ./configs/user/firefox/* $XDG_CONFIG_HOME/mozilla/firefox/*.default-release/
-install -o am ./configs/user/ghostty $XDG_CONFIG_HOME/ghostty/config
+cp -r /tmp/configs/user/firefox/* $XDG_CONFIG_HOME/mozilla/firefox/*.default-release/
 
-git clone --depth 1 'https://aur.archlinux.org/yay-bin.git'
-cd ./yay-bin
-makepkg -sic
+git clone --depth 1 'https://aur.archlinux.org/yay-bin.git' /tmp/yay-bin
+makepkg -sicD /tmp/yay-bin
 
 yay -Syu intel-compute-runtime-legacy-bin

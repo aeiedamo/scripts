@@ -26,6 +26,6 @@ install -m 0755 ./rescueinstall /mnt/usr/local/bin/
 arch-chroot -S /mnt /usr/local/bin/rescueinstall
 rm -f /mnt/usr/local/bin/rescueinstall
 
-install -m 0755 ./rescuepostinstall /mnt/usr/local/bin/
+install -m 0755 ./rescueuser /mnt/usr/local/bin/
 
 systemctl reboot --firmware-setup

@@ -21,7 +21,6 @@ mv /tmp/configs/gdm/gdm /etc/dconf/profile/
 mv /tmp/configs/gdm/gdm.d /etc/dconf/db/
 dconf update
 cp /tmp/configs/user/ghostty $XDG_CONFIG_HOME/ghostty/config
-firefox &
 cp -r /tmp/configs/user/firefox/* $XDG_CONFIG_HOME/mozilla/firefox/*.default-release/
 
 gsettings set org.gnome.desktop.interface font-name 'Sans 10'

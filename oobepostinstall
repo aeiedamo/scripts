@@ -5,18 +5,8 @@ DISK2="$(realpath /dev/disk/by-id/nvme-eui.e8238fa6bf530001001b448b47f32f0c)"
 CRPTP1="${DISK1}p2"
 CRPTP2="${DISK2}p1"
 
-rm -fr /boot/EFI
-
-bootctl remove
-
-sed -i -e '/^default_uki/s/Linux\/arch-linux.efi/BOOT\/BOOTX64.EFI/' /etc/mkinitcpio.d/linux.preset
-
-mkinitcpio -P
-
-systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-public-key /etc/systemd/tpm2-pcr-public-key.pem --tpm2-public-key-pcrs 11 --tpm2-pcrs 7+15:sha256=0000000000000000000000000000000000000000000000000000000000000000 $CRPTP1
-systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-public-key /etc/systemd/tpm2-pcr-public-key.pem --tpm2-public-key-pcrs 11 --tpm2-pcrs 7+15:sha256=0000000000000000000000000000000000000000000000000000000000000000 $CRPTP2
-
-sbsign --key /etc/kernel/secure-boot-private-key.pem --cert /etc/kernel/secure-boot-certificate.pem /usr/lib/fwupd/efi/fwupdx64.efi
+systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-pcrs 7 $CRPTP1
+systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-pcrs 7 $CRPTP2
 
 umount /.snapshots
 rm -fr /.snapshots

@@ -24,40 +24,32 @@ sed -i -e '/^#NoExtract/s/^#// ' -e '/^NoExtract/s/$/ boot\/intel-ucode.img/' -e
 printf '%s\n' 'Server = https://mirror.pkgbuild.com/$repo/os/$arch' | tee /etc/pacman.d/mirrorlist
 sed -i -e 's/^MAKEFLAGS.*/MAKEFLAGS="-j8"/' -e '/^#BUILDDIR/s/^#//' -e '/^OPTIONS/s/debug/!debug/' /etc/makepkg.conf
 
-pacman -Syu linux linux-headers apparmor base-devel bash-completion devtools dosfstools edk2-shell efibootmgr fwupd intel-ucode linux-firmware linux-tools-meta man-db mkinitcpio nvme-cli sbsigntools snap-pac systemd-ukify wireless-regdb
-
-rm -f /boot/*.img
-mkdir -p /etc/cmdline.d
+pacman -Syu linux linux-headers apparmor base-devel bash-completion devtools dosfstools edk2-shell efibootmgr fwupd intel-ucode linux-firmware linux-tools-meta man-db mkinitcpio nvme-cli sbctl snap-pac wireless-regdb
 
 sed -i -e '/^HOOKS/s/systemd/& btrfs/' -e '/^HOOKS/s/keymap/plymouth/' -e '/^HOOKS/s/filesystems/sd-encrypt &/' /etc/mkinitcpio.conf
 
-sed -i -e '1imkdir -p \/boot\/EFI\/BOOT' -e '/^default_image/s//#&/' -e '/^#default_uki/s/\/efi/\/boot/' -e '/^#default_uki/s/^#//' /etc/mkinitcpio.d/linux.preset
-
-printf "root=UUID=$(lsblk -dno UUID /dev/mapper/$ROOTP1) rw rootflags=compress=zstd,subvol=/@\n" | tee /etc/cmdline.d/0-root.conf
-
-printf 'lsm=landlock,lockdown,yama,integrity,apparmor,bpf\n' | tee /etc/cmdline.d/1-security.conf
-
-printf 'quiet splash\n' | tee /etc/cmdline.d/2-splash.conf
-
 sed -i -e '/SA/s/^#//' /etc/conf.d/wireless-regdom
 
-printf '[UKI]\nSecureBootSigningTool=sbsign\nSecureBootPrivateKey=/etc/kernel/secure-boot-private-key.pem\nSecureBootCertificate=/etc/kernel/secure-boot-certificate.pem\nSignKernel=true\n[PCRSignature:system]\nPCRPrivateKey=/etc/systemd/tpm2-pcr-private-key.pem\nPCRPublicKey=/etc/systemd/tpm2-pcr-public-key.pem\n' | tee /etc/kernel/uki.conf
+sbctl create-keys
 
-ukify genkey --config /etc/kernel/uki.conf
+sbctl enroll-keys
 
-sbsign --key /etc/kernel/secure-boot-private-key.pem --cert /etc/kernel/secure-boot-certificate.pem --output /usr/lib/systemd/boot/efi/systemd-bootx64.efi.signed /usr/lib/systemd/boot/efi/systemd-bootx64.efi
+sbctl sign -s -o /usr/lib/systemd/boot/efi/systemd-bootx64.efi.signed /usr/lib/systemd/boot/efi/systemd-bootx64.efi
+sbctl sign -s -o /usr/lib/fwupd/efi/fwupdx64.efi.signed /usr/lib/fwupd/efi/fwupdx64.efi
 
-bootctl install --variables no --secure-boot-auto-enroll yes --certificate /etc/kernel/secure-boot-certificate.pem --private-key /etc/kernel/secure-boot-private-key.pem
+bootctl install
 
-printf 'secure-boot-enroll force\n' | tee /boot/loader/loader.conf
+printf "title\tArch Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\noptions\troot=UUID=$(lsblk -dno UUID /dev/mapper/$ROOTP1) rw rootflags=compress=zstd,subvol=/@ lsm=landlock,lockdown,yama,integrity,apparmor,bpf quiet splash\n" | tee /boot/loader/entries/arch-linux.conf
+
+printf 'default\tarch-linux.conf\n' | tee /boot/loader/loader.conf
+
+cp /usr/share/edk2-shell/x64/Shell.efi /boot/shellx64.efi
 
 pacman -Syu gdm gnome-control-center alsa-firmware alsa-utils archlinux-appstream-data dconf-editor evolution-data-server file-roller gnome-browser-connector gnome-characters gnome-keyring gnome-packagekit gnome-remote-desktop gnome-shell-extension-appindicator gnome-themes-extra gnome-user-share gst-plugin-va gst-plugins-bad gst-plugins-ugly guestfs-tools gvfs-afc gvfs-google gvfs-onedrive gvfs-gphoto2 gvfs-mtp gvfs-nfs intel-media-sdk libappindicator libayatana-appindicator malcontent networkmanager noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra orca pipewire-alsa pipewire-jack plymouth proton-vpn-gtk-app qemu-full qemu-user-static-binfmt rygel snapshot sof-firmware system-config-printer ttf-noto-nerd tuned-ppd virt-manager vulkan-intel zram-generator
 
 pacman -Syu ardour arch-wiki-docs baobab bluez-cups bluez-utils calf cronie cups-pdf dnsmasq easyeffects evince fastfetch firefox firewall-applet ghostty gimp github-cli gnome-software gparted hunspell-en_us inetutils lazygit libreoffice-fresh loupe lsp-plugins-lv2 mda.lv2 mission-center mpv net-tools obsidian obs-studio onnxruntime-cpu qalculate-gtk qbittorrent qt6-multimedia-gstreamer radvd rnote rustup swtpm telegram-desktop throttled thunderbird trash-cli wl-clipboard yt-dlp zam-plugins-lv2 zed
 
-systemctl enable apparmor bluetooth cronie cups firewalld fstrim.timer fwupd-refresh.timer gdm gnome-remote-desktop libvirtd NetworkManager sshd systemd-resolved systemd-timesyncd throttled tuned tuned-ppd virtnetworkd virtqemud virtstoraged
-
-systemctl mask systemd-pcrproduct systemd-tpm2-setup systemd-tpm2-setup-early
+systemctl enable apparmor bluetooth cronie cups firewalld fstrim.timer fwupd-refresh.timer gdm gnome-remote-desktop libvirtd NetworkManager sshd systemd-boot-update systemd-resolved systemd-timesyncd throttled tuned tuned-ppd virtnetworkd virtqemud virtstoraged
 
 useradd -c 'AlaEldin Mohamed' -G audio,disk,kvm,libvirt,log,storage,wheel -m am
 

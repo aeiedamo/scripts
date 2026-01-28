@@ -11,7 +11,6 @@ gsettings set org.gnome.desktop.media-handling automount false
 gsettings set org.gnome.desktop.media-handling automount-open false
 
 cp /tmp/configs/user/ghostty $XDG_CONFIG_HOME/ghostty/config
-firefox &
 cp -r /tmp/configs/user/firefox/* $XDG_CONFIG_HOME/mozilla/firefox/*.default-release/
 
 git clone --depth 1 'https://aur.archlinux.org/yay-bin.git' /tmp/yay-bin

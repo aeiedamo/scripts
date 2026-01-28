@@ -43,6 +43,6 @@ arch-chroot -S /mnt /usr/local/bin/oobeinstall
 rm -f /mnt/usr/local/bin/oobeinstall
 
 install -m 0755 ./oobepostinstall /mnt/usr/local/bin/
-install -m 0755 -o am ./oobeuser /mnt/usr/local/bin/
+install -m 0755 ./oobeuser /mnt/usr/local/bin/
 
 systemctl reboot --firmware-setup

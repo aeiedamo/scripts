@@ -26,13 +26,18 @@ printf 'default\tarch-linux.conf' | tee /boot/loader/loader.conf
 
 printf "title\tArch Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\noptions\troot=UUID=$(lsblk -dno UUID /dev/sda2) rw rootflags=compress=zstd,subvol=/@ lsm=landlock,lockdown,yama,integrity,apparmor,bpf quiet splash\n" | tee /boot/loader/entries/arch-linux.conf
 
-pacman -Syu gdm gnome-control-center alsa-firmware alsa-utils archlinux-appstream-data dconf-editor evolution-data-server file-roller gnome-browser-connector gnome-characters gnome-keyring gnome-packagekit gnome-remote-desktop gnome-shell-extension-appindicator gnome-themes-extra gnome-user-share gst-plugin-va gst-plugins-bad gst-plugins-ugly guestfs-tools gvfs-afc gvfs-google gvfs-onedrive gvfs-gphoto2 gvfs-mtp gvfs-nfs intel-media-sdk libappindicator libayatana-appindicator malcontent networkmanager noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra orca pipewire-alsa pipewire-jack plymouth proton-vpn-gtk-app qemu-full qemu-user-static-binfmt rygel snapshot sof-firmware system-config-printer ttf-noto-nerd tuned-ppd virt-manager vulkan-intel zram-generator
+pacman -Syu gdm gnome-control-center alsa-firmware alsa-utils dconf-editor evolution-data-server file-roller gnome-browser-connector gnome-characters gnome-keyring gnome-remote-desktop gnome-shell-extension-appindicator gnome-themes-extra gnome-user-share gst-plugin-va gst-plugins-bad gst-plugins-ugly guestfs-tools gvfs-afc gvfs-google gvfs-onedrive gvfs-gphoto2 gvfs-mtp gvfs-nfs intel-media-sdk libappindicator libayatana-appindicator malcontent networkmanager noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra orca pipewire-alsa pipewire-jack plymouth proton-vpn-gtk-app qemu-full qemu-user-static-binfmt rygel snapshot sof-firmware system-config-printer ttf-noto-nerd tuned-ppd virt-manager vulkan-intel zram-generator
 
 pacman -Syu ardour arch-wiki-docs baobab bluez-cups bluez-utils calf cronie cups-pdf dnsmasq easyeffects evince fastfetch firefox firewall-applet ghostty gimp github-cli gnome-software gparted hunspell-en_us inetutils lazygit libreoffice-fresh loupe lsp-plugins-lv2 mda.lv2 mission-center mpv net-tools obsidian obs-studio onnxruntime-cpu qalculate-gtk qbittorrent qt6-multimedia-gstreamer radvd rnote rustup swtpm telegram-desktop throttled thunderbird trash-cli wl-clipboard yt-dlp zam-plugins-lv2 zed
 
-systemctl enable apparmor bluetooth cronie cups firewalld fwupd-refresh.timer gdm gnome-remote-desktop libvirtd NetworkManager sshd systemd-resolved systemd-timesyncd throttled tuned tuned-ppd virtnetworkd virtqemud virtstoraged
+systemctl enable apparmor bluetooth cronie cups firewalld fwupd-refresh.timer gdm gnome-remote-desktop libvirtd NetworkManager sshd systemd-boot-update systemd-resolved systemd-timesyncd throttled tuned tuned-ppd virtnetworkd virtqemud virtstoraged
 
-passwd root
+printf '%s\n' '%wheel ALL=(ALL:ALL) ALL' | tee /etc/sudoers.d/01-wheel
+
+passwd -dl root
+
+useradd -c 'AlaEldin Mohamed' -G audio,disk,kvm,libvirt,log,storage,wheel -m am
+passwd am
 
 printf 'options psmouse synaptics_intertouch=1\n' | tee /etc/modprobe.d/psmouse.conf
 

@@ -8,8 +8,8 @@ CRPTP2="${DISK2}p1"
 ROOTP1='rootp1'
 ROOTP2='rootp2'
 
-ln -fs /usr/share/zoneinfo/Asia/Riyadh /etc/localtime
-hwclock -uw
+ln -f -s /usr/share/zoneinfo/Asia/Riyadh /etc/localtime
+hwclock -u -w
 
 sed -i -e '/^#en_US.UTF-8/s/^#//' -e '/^#ar_EG.UTF-8/s/^#//' /etc/locale.gen
 locale-gen
@@ -42,7 +42,7 @@ printf "title\tArch Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\n
 
 printf 'default\tarch-linux.conf\n' | tee /boot/loader/loader.conf
 
-pacman -Syu gdm gnome-control-center alsa-firmware alsa-utils archlinux-appstream-data dconf-editor evolution-data-server file-roller gnome-browser-connector gnome-characters gnome-keyring gnome-packagekit gnome-remote-desktop gnome-shell-extension-appindicator gnome-themes-extra gnome-user-share gst-plugin-va gst-plugins-bad gst-plugins-ugly guestfs-tools gvfs-afc gvfs-google gvfs-onedrive gvfs-gphoto2 gvfs-mtp gvfs-nfs intel-media-sdk libappindicator libayatana-appindicator malcontent networkmanager noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra orca pipewire-alsa pipewire-jack plymouth proton-vpn-gtk-app qemu-full qemu-user-static-binfmt rygel snapshot sof-firmware system-config-printer ttf-noto-nerd tuned-ppd virt-manager vulkan-intel zram-generator
+pacman -Syu gdm gnome-control-center alsa-firmware alsa-utils archlinux-appstream-data dconf-editor evolution-data-server file-roller gnome-browser-connector gnome-characters gnome-keyring gnome-remote-desktop gnome-shell-extension-appindicator gnome-themes-extra gnome-user-share gst-plugin-va gst-plugins-bad gst-plugins-ugly guestfs-tools gvfs-afc gvfs-google gvfs-onedrive gvfs-gphoto2 gvfs-mtp gvfs-nfs intel-media-sdk libappindicator libayatana-appindicator malcontent networkmanager noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra orca pipewire-alsa pipewire-jack plymouth proton-vpn-gtk-app qemu-full qemu-user-static-binfmt rygel snapshot sof-firmware system-config-printer ttf-noto-nerd tuned-ppd virt-manager vulkan-intel zram-generator
 
 pacman -Syu ardour arch-wiki-docs baobab bluez-cups bluez-utils calf cronie cups-pdf dnsmasq easyeffects evince fastfetch firefox firewall-applet ghostty gimp github-cli gnome-software gparted hunspell-en_us inetutils lazygit libreoffice-fresh loupe lsp-plugins-lv2 mda.lv2 mission-center mpv net-tools obsidian obs-studio onnxruntime-cpu qalculate-gtk qbittorrent qt6-multimedia-gstreamer radvd rnote rustup swtpm telegram-desktop throttled thunderbird trash-cli wl-clipboard yt-dlp zam-plugins-lv2 zed
 

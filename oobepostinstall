@@ -21,6 +21,7 @@ snapper -c home set-config 'ALLOW_GROUPS=wheel' 'SYNC_ACL=yes' 'TIMELINE_LIMIT_H
 btrfs subvolume delete /.snapshots
 mkdir /.snapshots
 mount -a
+systemctl daemon-reload
 systemctl enable snapper-boot.timer snapper-cleanup.timer
 
 git clone --depth 1 'https://github.com/aeiedamo/configs' /tmp/configs

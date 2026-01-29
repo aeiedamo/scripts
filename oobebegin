@@ -44,5 +44,6 @@ rm -f /mnt/usr/local/bin/oobeinstall
 
 install -m 0755 ./oobepostinstall /mnt/usr/local/bin/
 install -m 0755 ./oobeuser /mnt/usr/local/bin/
+cp -r ./scripts /mnt/opt/
 
 systemctl reboot --firmware-setup

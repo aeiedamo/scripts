@@ -24,12 +24,10 @@ mount -a
 systemctl daemon-reload
 systemctl enable snapper-boot.timer snapper-cleanup.timer
 
-git clone --depth 1 'https://github.com/aeiedamo/configs' /tmp/configs
-
-mv /tmp/configs/systemd/logind.conf.d /etc/systemd/
-mv /tmp/configs/fonts/local.conf /etc/fonts/
-mv /tmp/configs/profile/* /etc/profile.d/
-mv /tmp/configs/fwupd/fwupd.conf /etc/fwupd/
-mv /tmp/configs/gdm/gdm /etc/dconf/profile/
-mv /tmp/configs/gdm/gdm.d /etc/dconf/db/
+mv /opt/configs/systemd/logind.conf.d /etc/systemd/
+mv /opt/configs/fonts/local.conf /etc/fonts/
+mv /opt/configs/profile/* /etc/profile.d/
+mv /opt/configs/fwupd/fwupd.conf /etc/fwupd/
+mv /opt/configs/gdm/gdm /etc/dconf/profile/
+mv /opt/configs/gdm/gdm.d /etc/dconf/db/
 dconf update

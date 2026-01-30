@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
-sudo oobepostinstall
-sudo rm -f /usr/local/bin/oobepostinstall
+sudo oobe_postinstall
+sudo rm -f /usr/local/bin/oobe_postinstall
 
 gsettings set org.gnome.desktop.interface font-name 'Sans 10'
 gsettings set org.gnome.desktop.interface document-font-name 'Serif 10'
@@ -10,6 +10,7 @@ gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
 gsettings set org.gnome.desktop.media-handling automount false
 gsettings set org.gnome.desktop.media-handling automount-open false
 
+cp -r /opt/configs/user/backgrounds/ ~/.local/share/
 cp /opt/configs/user/ghostty $XDG_CONFIG_HOME/ghostty/config
 cp -r /opt/configs/user/firefox/* $XDG_CONFIG_HOME/mozilla/firefox/*.default-release/
 
@@ -20,4 +21,4 @@ makepkg -sicD /tmp/yay-bin
 
 yay -Syu intel-compute-runtime-legacy-bin
 
-sudo rm -f /usr/local/bin/oobeuser
+sudo rm -f /usr/local/bin/oobe_user

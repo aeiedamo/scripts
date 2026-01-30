@@ -8,10 +8,6 @@ CRPTP2="${DISK2}p1"
 systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-pcrs 7 $CRPTP1
 systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-pcrs 7 $CRPTP2
 
-sbctl sign -s -o /usr/lib/fwupd/efi/fwupdx64.efi.signed /usr/lib/fwupd/efi/fwupdx64.efi
-sbctl sign -s /usr/share/edk2-shell/x64/Shell.efi
-cp /usr/share/edk2-shell/x64/Shell.efi /boot/shellx64.efi
-
 umount /.snapshots
 rm -fr /.snapshots
 snapper -c root create-config /
@@ -23,11 +19,3 @@ mkdir /.snapshots
 mount -a
 systemctl daemon-reload
 systemctl enable snapper-boot.timer snapper-cleanup.timer
-
-mv /opt/configs/systemd/logind.conf.d /etc/systemd/
-mv /opt/configs/fonts/local.conf /etc/fonts/
-mv /opt/configs/profile/* /etc/profile.d/
-mv /opt/configs/fwupd/fwupd.conf /etc/fwupd/
-mv /opt/configs/gdm/gdm /etc/dconf/profile/
-mv /opt/configs/gdm/gdm.d /etc/dconf/db/
-dconf update

@@ -18,11 +18,10 @@ git config set --global user.name 'AlaEldin Mohamed'
 git config set --global user.email 'aeiedamo@gmail.com'
 git config set --global init.defaultBranch 'main'
 
-ssh-keygen -t rsa -b 4096
-git config set --global user.signingkey $HOME/.ssh/id_rsa.pub
-git config set --global gpg.format ssh
+gpg --full-gen-key
+git config set --global user.signingkey "$(gpg -K --keyid-format=long | grep 'sec' | cut -d '/' -f2 | cut -d ' ' -f1)"
 git config set --global commit.gpgsign true
-
+git config set --global tag.gpgSign true
 
 sudo rm -fr /opt/configs
 

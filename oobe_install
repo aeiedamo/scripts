@@ -26,6 +26,8 @@ pacman -Syu --needed linux linux-headers apparmor base-devel bash-completion dev
 
 sed -i -e '/^HOOKS/s/systemd/& btrfs/' -e '/^HOOKS/s/keymap/plymouth/' -e '/^HOOKS/s/filesystems/sd-encrypt &/' /etc/mkinitcpio.conf
 
+sed -i -e '/SA/s/^#//' /etc/conf.d/wireless-regdom
+
 sbctl create-keys
 sbctl enroll-keys
 sbctl sign -s -o /usr/lib/systemd/boot/efi/systemd-bootx64.efi.signed /usr/lib/systemd/boot/efi/systemd-bootx64.efi
@@ -36,13 +38,11 @@ printf "title\tArch Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\n
 
 printf 'default\tarch-linux.conf\n' | tee /boot/loader/loader.conf
 
-sed -i -e '/SA/s/^#//' /etc/conf.d/wireless-regdom
+pacman -Syu --needed gdm gnome-control-center alsa-firmware alsa-utils dconf-editor evolution-data-server file-roller gnome-browser-connector gnome-characters gnome-keyring gnome-remote-desktop gnome-shell-extension-appindicator gnome-themes-extra gnome-user-share gst-plugin-va gst-plugins-bad gst-plugins-ugly guestfs-tools gvfs-afc gvfs-google gvfs-onedrive gvfs-gphoto2 gvfs-mtp gvfs-nfs intel-media-sdk libappindicator libayatana-appindicator malcontent modemmanager networkmanager noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra orca pipewire-alsa pipewire-jack plymouth proton-vpn-gtk-app qemu-full qemu-user-static-binfmt rygel snapshot sof-firmware system-config-printer ttf-noto-nerd tuned-ppd virt-manager vulkan-intel usb_modeswitch zram-generator
 
-pacman -Syu --needed gdm gnome-control-center alsa-firmware alsa-utils dconf-editor evolution-data-server file-roller gnome-browser-connector gnome-characters gnome-keyring gnome-remote-desktop gnome-shell-extension-appindicator gnome-themes-extra gnome-user-share gst-plugin-va gst-plugins-bad gst-plugins-ugly guestfs-tools gvfs-afc gvfs-google gvfs-onedrive gvfs-gphoto2 gvfs-mtp gvfs-nfs intel-media-sdk libappindicator libayatana-appindicator malcontent networkmanager noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra orca pipewire-alsa pipewire-jack plymouth proton-vpn-gtk-app qemu-full qemu-user-static-binfmt rygel snapshot sof-firmware system-config-printer ttf-noto-nerd tuned-ppd virt-manager vulkan-intel zram-generator
+pacman -Syu --needed ardour arch-wiki-docs baobab bluez-cups bluez-utils calf cronie cups-pdf dnsmasq easyeffects evince fastfetch firefox firewall-applet ghostty gimp github-cli gnome-software gparted hunspell-en_us inetutils iotas lazygit libreoffice-fresh loupe lsp-plugins-lv2 mda.lv2 mission-center mpv net-tools obs-studio onnxruntime-cpu qalculate-gtk qbittorrent qt6-multimedia-gstreamer radvd rnote rust swtpm telegram-desktop throttled thunderbird trash-cli wl-clipboard yt-dlp zam-plugins-lv2 zed
 
-pacman -Syu --needed ardour arch-wiki-docs baobab bluez-cups bluez-utils calf cronie cups-pdf dnsmasq easyeffects evince fastfetch firefox firewall-applet ghostty gimp github-cli gnome-software gparted hunspell-en_us inetutils lazygit libreoffice-fresh loupe lsp-plugins-lv2 mda.lv2 mission-center mpv net-tools obsidian obs-studio onnxruntime-cpu qalculate-gtk qbittorrent qt6-multimedia-gstreamer radvd rnote rustup swtpm telegram-desktop throttled thunderbird trash-cli wl-clipboard yt-dlp zam-plugins-lv2 zed
-
-systemctl enable apparmor bluetooth cronie cups firewalld fstrim.timer fwupd-refresh.timer gdm gnome-remote-desktop libvirtd NetworkManager sshd systemd-boot-update systemd-resolved systemd-timesyncd throttled tuned tuned-ppd virtnetworkd virtqemud virtstoraged
+systemctl enable apparmor bluetooth cronie cups firewalld fstrim.timer fwupd-refresh.timer gdm gnome-remote-desktop libvirtd ModemManager NetworkManager sshd systemd-boot-update systemd-resolved systemd-timesyncd throttled tuned tuned-ppd virtnetworkd virtqemud virtstoraged
 
 sbctl sign -s -o /usr/lib/fwupd/efi/fwupdx64.efi.signed /usr/lib/fwupd/efi/fwupdx64.efi
 sbctl sign -s /usr/share/edk2-shell/x64/Shell.efi
@@ -50,7 +50,7 @@ cp /usr/share/edk2-shell/x64/Shell.efi /boot/shellx64.efi
 
 printf '%s\n' '%wheel ALL=(ALL:ALL) ALL' | tee /etc/sudoers.d/01-wheel
 
-passwd -dl root
+passwd -d -l root
 
 useradd -c 'AlaEldin Mohamed' -G audio,disk,kvm,libvirt,log,storage,wheel -m am
 passwd am

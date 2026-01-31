@@ -14,6 +14,16 @@ cp -r /opt/configs/user/backgrounds/ ~/.local/share/
 cp /opt/configs/user/ghostty $XDG_CONFIG_HOME/ghostty/config
 cp -r /opt/configs/user/firefox/* $XDG_CONFIG_HOME/mozilla/firefox/*.default-release/
 
+git config set --global user.name 'AlaEldin Mohamed'
+git config set --global user.email 'aeiedamo@gmail.com'
+git config set --global init.defaultBranch 'main'
+
+ssh-keygen -t rsa -b 4096
+git config set --global user.signingkey $HOME/.ssh/id_rsa.pub
+git config set --global gpg.format ssh
+git config set --global commit.gpgsign true
+
+
 sudo rm -fr /opt/configs
 
 git clone --depth 1 'https://aur.archlinux.org/yay-bin.git' /tmp/yay-bin

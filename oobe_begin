@@ -25,11 +25,11 @@ cryptsetup --allow-discards --persistent open $CRPTP2 $ROOTP2
 
 mkfs.btrfs -L 'ROOT' -d raid0 -m raid0 /dev/mapper/$ROOTP1 /dev/mapper/$ROOTP2
 mount -o compress=zstd /dev/mapper/$ROOTP1 /mnt
-btrfs subvolume create /mnt/@ /mnt/@home /mnt/@var /mnt/@snapshots
+btrfs subvolume create /mnt/@ /mnt/@var /mnt/@home /mnt/@snapshots
 umount /mnt
 mount -o compress=zstd,subvol=/@ /dev/mapper/$ROOTP1 /mnt
-mount -m -o compress=zstd,subvol=/@home /dev/mapper/$ROOTP1 /mnt/home
 mount -m -o compress=zstd,subvol=/@var /dev/mapper/$ROOTP1 /mnt/var
+mount -m -o compress=zstd,subvol=/@home /dev/mapper/$ROOTP1 /mnt/home
 mount -m -o compress=zstd,subvol=/@snapshots /dev/mapper/$ROOTP1 /mnt/.snapshots
 mount -m -o nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077 $BOOT /mnt/boot
 

@@ -5,8 +5,6 @@ DISK2="$(realpath /dev/disk/by-id/nvme-eui.e8238fa6bf530001001b448b47f32f0c)"
 BOOT="${DISK1}p1"
 CRPTP1="${DISK1}p2"
 CRPTP2="${DISK2}p1"
-ROOTP1='rootp1'
-ROOTP2='rootp2'
 
 sed -i -e '/^#en_US.UTF-8/s/^#//' -e '/^#ar_EG.UTF-8/s/^#//' /etc/locale.gen
 locale-gen
@@ -34,7 +32,7 @@ sbctl sign -s -o /usr/lib/systemd/boot/efi/systemd-bootx64.efi.signed /usr/lib/s
 
 bootctl install
 
-printf '%s\t%s\n%s\t%s\n%s\t%s\n%s\t%s%s%s%s %s%s%s%s %s %s%s %s %s %s\n' 'title' 'Arch Linux' 'linux' '/vmlinuz-linux' 'initrd' '/initramfs-linux.img' 'options' 'rd.luks.name=' "$(lsblk -dno UUID $CRPTP1)" '=' "$ROOTP1" 'rd.luks.name=' "$(lsblk -dno UUID $CRPTP2)" '=' "$ROOTP2" 'rd.luks.options=tpm2-device=/dev/tpmrm0' 'root=UUID=' "$(lsblk -dno UUID /dev/mapper/$ROOTP1)" 'rw rootflags=compress=zstd,subvol=/@' 'lsm=landlock,lockdown,yama,integrity,apparmor,bpf' 'quiet splash' | tee /boot/loader/entries/arch-linux.conf
+printf '%s\t%s\n%s\t%s\n%s\t%s\n%s\t%s%s%s %s%s%s %s %s%s %s %s %s\n' 'title' 'Arch Linux' 'linux' '/vmlinuz-linux' 'initrd' '/initramfs-linux.img' 'options' 'rd.luks.name=' "$(lsblk -dno UUID $CRPTP1)" '=rootp1' 'rd.luks.name=' "$(lsblk -dno UUID $CRPTP2)" '=rootp2' 'rd.luks.options=tpm2-device=/dev/tpmrm0' 'root=UUID=' "$(lsblk -dno UUID /dev/mapper/rootp1)" 'rw rootflags=compress=zstd,subvol=/@' 'lsm=landlock,lockdown,yama,integrity,apparmor,bpf' 'quiet splash' | tee /boot/loader/entries/arch-linux.conf
 
 printf '%s\t%s\n' 'default' 'arch-linux.conf' | tee /boot/loader/loader.conf
 

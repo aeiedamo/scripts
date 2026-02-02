@@ -5,8 +5,6 @@ DISK2="$(realpath /dev/disk/by-id/nvme-eui.e8238fa6bf530001001b448b47f32f0c)"
 BOOT="${DISK1}p1"
 CRPTP1="${DISK1}p2"
 CRPTP2="${DISK2}p1"
-ROOTP1='rootp1'
-ROOTP2='rootp2'
 
 nvme format /dev/nvme0 -f -n 1 -l 0 -s 1 -r
 nvme format /dev/nvme1 -f -n 1 -l 0 -s 1 -r
@@ -18,20 +16,20 @@ sgdisk -n 1:0:0 -c 1:'ROOT' -t 1:8304 $DISK2
 mkfs.fat -F 32 -n 'BOOT' $BOOT
 
 cryptsetup luksFormat --label 'CRPT' -q $CRPTP1
-cryptsetup --allow-discards --persistent open $CRPTP1 $ROOTP1
+cryptsetup --allow-discards --persistent open $CRPTP1 rootp1
 
 cryptsetup luksFormat --label 'CRPT' -q $CRPTP2
-cryptsetup --allow-discards --persistent open $CRPTP2 $ROOTP2
+cryptsetup --allow-discards --persistent open $CRPTP2 rootp2
 
-mkfs.btrfs -L 'ROOT' -d raid0 -m raid0 /dev/mapper/$ROOTP1 /dev/mapper/$ROOTP2
-mount -o compress=zstd /dev/mapper/$ROOTP1 /mnt
+mkfs.btrfs -f -L 'ROOT' -d raid0 -m raid0 /dev/mapper/rootp1 /dev/mapper/rootp2
+mount -o 'compress=zstd' /dev/mapper/rootp1 /mnt
 btrfs subvolume create /mnt/@ /mnt/@var /mnt/@home /mnt/@snapshots
 umount /mnt
-mount -o compress=zstd,subvol=/@ /dev/mapper/$ROOTP1 /mnt
-mount -m -o compress=zstd,subvol=/@var /dev/mapper/$ROOTP1 /mnt/var
-mount -m -o compress=zstd,subvol=/@home /dev/mapper/$ROOTP1 /mnt/home
-mount -m -o compress=zstd,subvol=/@snapshots /dev/mapper/$ROOTP1 /mnt/.snapshots
-mount -m -o nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077 $BOOT /mnt/boot
+mount -o 'compress=zstd,subvol=/@' /dev/mapper/rootp1 /mnt
+mount -m -o 'compress=zstd,subvol=/@var' /dev/mapper/rootp1 /mnt/var
+mount -m -o 'compress=zstd,subvol=/@home' /dev/mapper/rootp1 /mnt/home
+mount -m -o 'compress=zstd,subvol=/@snapshots' /dev/mapper/rootp1 /mnt/.snapshots
+mount -m -o 'nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077' $BOOT /mnt/boot
 
 pacstrap -KM /mnt base iptables
 

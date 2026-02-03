@@ -10,15 +10,15 @@ nvme format /dev/nvme0 -f -n 1 -l 0 -s 1 -r
 nvme format /dev/nvme1 -f -n 1 -l 0 -s 1 -r
 partprobe $DISK1 $DISK2
 
-sgdisk -n 1:0:+1G -c 1:'BOOT' -t 1:ef00 -n 2:0:0 -c 2:'ROOT' -t 2:8304 $DISK1
-sgdisk -n 1:0:0 -c 1:'ROOT' -t 1:8304 $DISK2
+sgdisk -n 1:0:+1G -c 1:'BOOT' -t 1:ef00 -n 2:0:0 -c 2:'ROOTP1' -t 2:8304 $DISK1
+sgdisk -n 1:0:0 -c 1:'ROOTP2' -t 1:8304 $DISK2
 
 mkfs.fat -F 32 -n 'BOOT' $BOOT
 
-cryptsetup luksFormat --label 'CRPT' -q $CRPTP1
+cryptsetup luksFormat --label 'ROOTP1' -q $CRPTP1
 cryptsetup --allow-discards --persistent open $CRPTP1 rootp1
 
-cryptsetup luksFormat --label 'CRPT' -q $CRPTP2
+cryptsetup luksFormat --label 'ROOTP2' -q $CRPTP2
 cryptsetup --allow-discards --persistent open $CRPTP2 rootp2
 
 mkfs.btrfs -f -L 'ROOT' -d raid0 -m raid0 /dev/mapper/rootp1 /dev/mapper/rootp2

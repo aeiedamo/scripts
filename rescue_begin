@@ -21,11 +21,11 @@ pacstrap -KM /mnt base iptables
 
 genfstab -U /mnt | tee -a /mnt/etc/fstab
 
-install -m 0755 ./rescueinstall /mnt/usr/local/bin/
+install -m 0755 ./rescue_install /mnt/usr/local/bin/
 
-arch-chroot -S /mnt /usr/local/bin/rescueinstall
-rm -f /mnt/usr/local/bin/rescueinstall
+arch-chroot -S /mnt /usr/local/bin/rescue_install
+rm -f /mnt/usr/local/bin/rescue_install
 
-install -m 0755 ./rescueuser /mnt/usr/local/bin/
+install -m 0755 ./rescue_user /mnt/usr/local/bin/
 
 systemctl reboot --firmware-setup

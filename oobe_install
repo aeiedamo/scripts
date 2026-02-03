@@ -57,8 +57,6 @@ printf '%s\n' 'options psmouse synaptics_intertouch=1' | tee /etc/modprobe.d/psm
 
 printf '%s\n%s\n%s\n' '[zram0]' 'zram-size=ram' 'compression-algorithm=zstd' | tee /etc/systemd/zram-generator.conf
 
-printf '%s\n%s\n%s\n' '[Login]' 'HandleLidSwitch=ignore' 'HandleLidSwitchExternalPower=ignore' | tee /etc/systemd/logind.conf.d/lid.conf
-
 printf '%s\n' 'ListenAddress aeiedamo.local' | tee /etc/ssh/sshd_config.d/00-local.conf
 
 printf '%s\n' 'export EDITOR=vim VISUAL=vim' | tee /etc/profile.d/01-editor.sh
@@ -68,6 +66,8 @@ printf '%s\n' 'export XDG_CONFIG_HOME="$HOME/.config"' | tee /etc/profile.d/02-x
 printf '%s\n' 'export XDG_DATA_DIRS="${XDG_DATA_DIRS}:/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share"' | tee /etc/profile.d/03-flatpak.sh
 
 printf '%s\n%s\n' '[uefi_capsule]' 'DisableShimForSecureBoot=true' | tee /etc/fwupd/fwupd.conf
+
+mv /opt/configs/systemd/logind.conf.d /etc/systemd/
 
 mv /opt/configs/fonts/local.conf /etc/fonts/
 

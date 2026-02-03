@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
-sudo oobe_postinstall
-sudo rm -f /usr/local/bin/oobe_postinstall
+sudo oobe_setup
+sudo rm -f /usr/local/bin/oobe_setup
 
 gsettings set org.gnome.desktop.interface font-name 'Sans 10'
 gsettings set org.gnome.desktop.interface document-font-name 'Serif 10'
@@ -11,10 +11,12 @@ gsettings set org.gnome.desktop.media-handling automount false
 gsettings set org.gnome.desktop.media-handling automount-open false
 gnome-extensions enable 'appindicatorsupport@rgcjonas.gmail.com'
 
-cp -r /opt/configs/user/backgrounds/ ~/.local/share/
-cp /opt/configs/user/ghostty $XDG_CONFIG_HOME/ghostty/config
+cp -r /opt/configs/backgrounds/ ~/.local/share/
+cp /opt/configs/user/ghostty/config $XDG_CONFIG_HOME/ghostty/config
 firefox
 cp -r /opt/configs/user/firefox/* $XDG_CONFIG_HOME/mozilla/firefox/*.default-release/
+
+sudo rm -fr /opt/configs
 
 git config set --global user.name 'AlaEldin Mohamed'
 git config set --global user.email 'aeiedamo@gmail.com'
@@ -24,8 +26,6 @@ gpg --full-gen-key
 git config set --global user.signingkey "$(gpg -K --keyid-format=long | grep 'sec' | cut -d '/' -f2 | cut -d ' ' -f1)"
 git config set --global commit.gpgsign true
 git config set --global tag.gpgSign true
-
-sudo rm -fr /opt/configs
 
 git clone --depth 1 'https://aur.archlinux.org/yay-bin.git' /tmp/yay-bin
 makepkg -sicD /tmp/yay-bin

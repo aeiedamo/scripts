@@ -36,12 +36,12 @@ pacstrap -KM /mnt base iptables
 genfstab -U /mnt | tee -a /mnt/etc/fstab
 
 install -m 0755 ./oobe_install /mnt/usr/local/bin/
+cp -r ./configs /mnt/opt/
 
 arch-chroot -S /mnt /usr/local/bin/oobe_install
 rm -f /mnt/usr/local/bin/oobe_install
 
-install -m 0755 ./oobe_postinstall /mnt/usr/local/bin/
+install -m 0755 ./oobe_setup /mnt/usr/local/bin/
 install -m 0755 ./oobe_user /mnt/usr/local/bin/
-cp -r ./configs /mnt/opt/
 
 systemctl reboot --firmware-setup

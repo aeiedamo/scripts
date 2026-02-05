@@ -1,34 +1,34 @@
 #!/usr/bin/bash
 
-DISK1="$(realpath /dev/disk/by-id/nvme-nvme.1e4b-30303335363230303030303532-4e452d3154422032323432-00000001)"
-DISK2="$(realpath /dev/disk/by-id/nvme-eui.e8238fa6bf530001001b448b47f32f0c)"
-BOOT="${DISK1}p1"
-CRPTP1="${DISK1}p2"
-CRPTP2="${DISK2}p1"
+DISK0="$(realpath /dev/disk/by-id/nvme-nvme.1e4b-30303335363230303030303532-4e452d3154422032323432-00000001)"
+DISK1="$(realpath /dev/disk/by-id/nvme-eui.e8238fa6bf530001001b448b47f32f0c)"
+BOOT="${DISK0}p1"
+DM0="${DISK0}p2"
+DM1="${DISK1}p1"
 
 nvme format /dev/nvme0 -f -n 1 -l 0 -s 1 -r
 nvme format /dev/nvme1 -f -n 1 -l 0 -s 1 -r
-partprobe $DISK1 $DISK2
+partprobe $DISK0 $DISK1
 
-sgdisk -n 1:0:+1G -c 1:'BOOT' -t 1:ef00 -n 2:0:0 -c 2:'ROOTP1' -t 2:8304 $DISK1
-sgdisk -n 1:0:0 -c 1:'ROOTP2' -t 1:8304 $DISK2
+sgdisk -n 1:0:+1G -c 1:'BOOT' -t 1:ef00 -n 2:0:0 -c 2:'DM0' -t 2:8304 $DISK0
+sgdisk -n 1:0:0 -c 1:'DM1' -t 1:8304 $DISK1
 
 mkfs.fat -F 32 -n 'BOOT' $BOOT
 
-cryptsetup luksFormat --label 'ROOTP1' -q $CRPTP1
-cryptsetup --allow-discards --persistent open $CRPTP1 rootp1
+cryptsetup luksFormat --label 'DM0' -q $DM0
+cryptsetup --allow-discards --persistent open $DM0 DM0
 
-cryptsetup luksFormat --label 'ROOTP2' -q $CRPTP2
-cryptsetup --allow-discards --persistent open $CRPTP2 rootp2
+cryptsetup luksFormat --label 'DM1' -q $DM1
+cryptsetup --allow-discards --persistent open $DM1 DM1
 
-mkfs.btrfs -f -L 'ROOT' -d raid0 -m raid0 /dev/mapper/rootp1 /dev/mapper/rootp2
-mount -o 'compress=zstd' /dev/mapper/rootp1 /mnt
+mkfs.btrfs -f -L 'ROOT' -d raid0 -m raid0 /dev/mapper/DM0 /dev/mapper/DM1
+mount -o 'compress=zstd' /dev/mapper/DM0 /mnt
 btrfs subvolume create /mnt/@ /mnt/@var /mnt/@home /mnt/@snapshots
 umount /mnt
-mount -o 'compress=zstd,subvol=/@' /dev/mapper/rootp1 /mnt
-mount -m -o 'compress=zstd,subvol=/@var' /dev/mapper/rootp1 /mnt/var
-mount -m -o 'compress=zstd,subvol=/@home' /dev/mapper/rootp1 /mnt/home
-mount -m -o 'compress=zstd,subvol=/@snapshots' /dev/mapper/rootp1 /mnt/.snapshots
+mount -o 'compress=zstd,subvol=/@' /dev/mapper/DM0 /mnt
+mount -m -o 'compress=zstd,subvol=/@var' /dev/mapper/DM0 /mnt/var
+mount -m -o 'compress=zstd,subvol=/@home' /dev/mapper/DM0 /mnt/home
+mount -m -o 'compress=zstd,subvol=/@snapshots' /dev/mapper/DM0 /mnt/.snapshots
 mount -m -o 'nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077' $BOOT /mnt/boot
 
 pacstrap -KM /mnt base iptables

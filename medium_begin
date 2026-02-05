@@ -1,0 +1,34 @@
+#!/usr/bin/bash
+
+blkdiscard -fz /dev/sda
+partprobe /dev/sda
+
+sgdisk -n 1:0:+1G -c 1:'BOOT' -t 1:ef00 -n 2:0:0 -c 2:'DM0' -t 2:8304 /dev/sda
+
+mkfs.fat -F 32 -n 'BOOT' /dev/sda1
+
+mkfs.btrfs -f -L 'ROOT' -m single /dev/sda2
+
+mount -o 'compress=zstd' /dev/sda2 /mnt
+btrfs subvolume create /mnt/@ /mnt/@var /mnt/@home /mnt/@snapshots
+umount /mnt
+mount -o 'compress=zstd,subvol=/@' /dev/sda2 /mnt
+mount -m -o 'compress=zstd,subvol=/@var' /dev/sda2 /mnt/var
+mount -m -o 'compress=zstd,subvol=/@home' /dev/sda2 /mnt/home
+mount -m -o 'compress=zstd,subvol=/@snapshots' /dev/sda2 /mnt/.snapshots
+mount -m -o 'nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077' /dev/sda2 /mnt/boot
+
+pacstrap -KM /mnt base iptables
+
+genfstab -U /mnt | tee -a /mnt/etc/fstab
+
+install -m 0755 ./medium_install /mnt/usr/local/bin/
+cp -r ./configs /mnt/opt/
+
+arch-chroot -S /mnt /usr/local/bin/medium_install
+rm -f /mnt/usr/local/bin/medium_install
+
+install -m 0755 ./medium_setup /mnt/usr/local/bin/
+install -m 0755 ./medium_user /mnt/usr/local/bin/
+
+systemctl reboot --firmware-setup

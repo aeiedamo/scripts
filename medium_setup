@@ -1,13 +1,5 @@
 #!/usr/bin/bash
 
-DISK0="$(realpath /dev/disk/by-id/nvme-nvme.1e4b-30303335363230303030303532-4e452d3154422032323432-00000001)"
-DISK1="$(realpath /dev/disk/by-id/nvme-eui.e8238fa6bf530001001b448b47f32f0c)"
-DM0="${DISK0}p2"
-DM1="${DISK1}p1"
-
-systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-pcrs 7 $DM0
-systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-pcrs 7 $DM1
-
 umount /.snapshots
 rm -fr /.snapshots
 snapper -c root create-config /

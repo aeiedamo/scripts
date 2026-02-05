@@ -1,11 +1,5 @@
 #!/usr/bin/bash
 
-DISK0="$(realpath /dev/disk/by-id/nvme-nvme.1e4b-30303335363230303030303532-4e452d3154422032323432-00000001)"
-DISK1="$(realpath /dev/disk/by-id/nvme-eui.e8238fa6bf530001001b448b47f32f0c)"
-BOOT="${DISK0}p1"
-DM0="${DISK0}p2"
-DM1="${DISK1}p1"
-
 sed -i -e '/^#en_US.UTF-8/s/^#//' -e '/^#ar_EG.UTF-8/s/^#//' /etc/locale.gen
 locale-gen
 printf '%s\n' 'LANG=en_US.UTF-8' | tee /etc/locale.conf
@@ -20,19 +14,15 @@ sed -i -e '/^#NoExtract/s/$/ boot\/intel-ucode.img/' -e '/^#NoExtract/s/^#// ' -
 printf '%s\n' 'Server = https://mirror.pkgbuild.com/$repo/os/$arch' | tee /etc/pacman.d/mirrorlist
 sed -i -e 's/^MAKEFLAGS.*/MAKEFLAGS="-j8"/' -e '/^#BUILDDIR/s/^#//' -e '/^OPTIONS/s/debug/!&/' /etc/makepkg.conf
 
-pacman -Syu --needed linux linux-headers apparmor base-devel bash-completion devtools dosfstools edk2-shell efibootmgr fwupd intel-ucode linux-firmware linux-tools-meta man-db mkinitcpio nvme-cli sbctl snap-pac wireless-regdb
+pacman -Syu --needed linux linux-headers apparmor base-devel bash-completion devtools dosfstools edk2-shell efibootmgr fwupd intel-ucode linux-firmware linux-tools-meta man-db mkinitcpio nvme-cli snap-pac wireless-regdb
 
-sed -i -e '/^HOOKS/s/systemd/& btrfs/' -e '/^HOOKS/s/keymap/plymouth/' -e '/^HOOKS/s/filesystems/sd-encrypt &/' /etc/mkinitcpio.conf
+sed -i -e '/^HOOKS/s/keymap/plymouth/' /etc/mkinitcpio.conf
 
 sed -i -e '/SA/s/^#//' /etc/conf.d/wireless-regdom
 
-sbctl create-keys
-sbctl enroll-keys
-sbctl sign -s -o /usr/lib/systemd/boot/efi/systemd-bootx64.efi.signed /usr/lib/systemd/boot/efi/systemd-bootx64.efi
+bootctl install --variables=no
 
-bootctl install
-
-printf '%s\t%s\n%s\t%s\n%s\t%s\n%s\t%s%s%s %s%s%s %s %s%s %s %s %s\n' 'title' 'Arch Linux' 'linux' '/vmlinuz-linux' 'initrd' '/initramfs-linux.img' 'options' 'rd.luks.name=' "$(lsblk -dno UUID $DM0)" '=DM0' 'rd.luks.name=' "$(lsblk -dno UUID $DM1)" '=DM1' 'rd.luks.options=tpm2-device=/dev/tpmrm0' 'root=UUID=' "$(lsblk -dno UUID /dev/mapper/DM0)" 'rw rootflags=compress=zstd,subvol=/@' 'lsm=landlock,lockdown,yama,integrity,apparmor,bpf' 'quiet splash' | tee /boot/loader/entries/arch-linux.conf
+printf '%s\t%s\n%s\t%s\n%s\t%s\n%s\t%s%s %s %s %s\n' 'title' 'Arch Linux' 'linux' '/vmlinuz-linux' 'initrd' '/initramfs-linux.img' 'options' 'root=UUID=' "$(lsblk -dno UUID /dev/sda2)" 'rw rootflags=compress=zstd,subvol=/@' 'lsm=landlock,lockdown,yama,integrity,apparmor,bpf' 'quiet splash' | tee /boot/loader/entries/arch-linux.conf
 
 printf '%s\t%s\n' 'default' 'arch-linux.conf' | tee /boot/loader/loader.conf
 
@@ -40,10 +30,8 @@ pacman -Syu --needed gdm gnome-control-center 7zip alsa-firmware alsa-utils baob
 
 pacman -Syu --needed ardour arch-wiki-docs bluez-cups bluez-utils calf cronie crun cups-pdf distrobox dnsmasq easyeffects fastfetch firefox firewall-applet ghostty gimp github-cli gparted hunspell-en_us inetutils iotas lazygit libreoffice-fresh lsp-plugins-lv2 mda.lv2 mpv net-tools obs-studio onnxruntime-cpu qalculate-gtk qbittorrent qt6-multimedia-gstreamer radvd rnote rust swtpm telegram-desktop thunderbird trash-cli wl-clipboard yt-dlp zam-plugins-lv2 zed
 
-systemctl enable apparmor bluetooth cronie cups firewalld fstrim.timer fwupd-refresh.timer gdm gnome-remote-desktop libvirtd ModemManager NetworkManager sshd systemd-boot-update systemd-resolved systemd-timesyncd throttled tuned tuned-ppd virtnetworkd virtqemud virtstoraged
+systemctl enable apparmor bluetooth cronie cups firewalld fwupd-refresh.timer gdm gnome-remote-desktop libvirtd ModemManager NetworkManager sshd systemd-boot-update systemd-resolved systemd-timesyncd throttled tuned tuned-ppd virtnetworkd virtqemud virtstoraged
 
-sbctl sign -s -o /usr/lib/fwupd/efi/fwupdx64.efi.signed /usr/lib/fwupd/efi/fwupdx64.efi
-sbctl sign -s /usr/share/edk2-shell/x64/Shell.efi
 cp /usr/share/edk2-shell/x64/Shell.efi /boot/shellx64.efi
 
 printf '%s\n' '%wheel ALL=(ALL:ALL) ALL' | tee /etc/sudoers.d/01-wheel
@@ -64,8 +52,6 @@ printf '%s\n' 'export EDITOR=vim VISUAL=vim' | tee /etc/profile.d/01-editor.sh
 printf '%s\n' 'export XDG_CONFIG_HOME="$HOME/.config"' | tee /etc/profile.d/02-xdg.sh
 
 printf '%s\n' 'export XDG_DATA_DIRS="${XDG_DATA_DIRS}:/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share"' | tee /etc/profile.d/03-flatpak.sh
-
-printf '%s\n%s\n' '[uefi_capsule]' 'DisableShimForSecureBoot=true' | tee /etc/fwupd/fwupd.conf
 
 mv /opt/configs/systemd/logind.conf.d /etc/systemd/
 

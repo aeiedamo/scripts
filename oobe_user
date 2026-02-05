@@ -12,7 +12,10 @@ gsettings set org.gnome.desktop.media-handling automount-open false
 gnome-extensions enable 'appindicatorsupport@rgcjonas.gmail.com'
 
 cp -r /opt/configs/backgrounds/ ~/.local/share/
+gsettings set org.gnome.desktop.background picture-uri-dark "$HOME/.local/share/backgrounds/pawel-czerwinski-NDsXLzA0Nl4-unsplash.jpg"
+
 cp -r /opt/configs/user/ghostty $XDG_CONFIG_HOME
+
 firefox
 cp -r /opt/configs/user/firefox/* $XDG_CONFIG_HOME/mozilla/firefox/*.default-release/
 

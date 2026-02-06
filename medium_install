@@ -14,7 +14,7 @@ sed -i -e '/^#NoExtract/s/$/ boot\/intel-ucode.img/' -e '/^#NoExtract/s/^#// ' -
 printf '%s\n' 'Server = https://mirror.pkgbuild.com/$repo/os/$arch' | tee /etc/pacman.d/mirrorlist
 sed -i -e 's/^MAKEFLAGS.*/MAKEFLAGS="-j8"/' -e '/^#BUILDDIR/s/^#//' -e '/^OPTIONS/s/debug/!&/' /etc/makepkg.conf
 
-pacman -Syu --needed linux linux-headers apparmor base-devel bash-completion devtools dosfstools edk2-shell efibootmgr fwupd intel-ucode linux-firmware linux-tools-meta man-db mkinitcpio nvme-cli snap-pac wireless-regdb
+pacman -Syu --needed linux linux-headers apparmor base-devel bash-completion devtools dosfstools edk2-shell efibootmgr intel-ucode linux-firmware linux-tools-meta man-db mkinitcpio nvme-cli snap-pac wireless-regdb
 
 sed -i -e '/^HOOKS/s/keymap/plymouth/' /etc/mkinitcpio.conf
 
@@ -26,7 +26,7 @@ printf '%s\t%s\n%s\t%s\n%s\t%s\n%s\t%s%s %s %s %s\n' 'title' 'Arch Linux' 'linux
 
 printf '%s\t%s\n' 'default' 'arch-linux.conf' | tee /boot/loader/loader.conf
 
-pacman -Syu --needed gdm gnome-control-center 7zip alsa-firmware alsa-utils baobab cdrtools crun dconf-editor evolution-data-server file-roller gnome-browser-connector gnome-characters gnome-keyring gnome-remote-desktop gnome-shell-extension-appindicator gnome-software gnome-themes-extra gnome-tweaks gnome-user-share gst-plugin-va gst-plugins-bad gst-plugins-ugly guestfs-tools gvfs-afc gvfs-google gvfs-onedrive gvfs-gphoto2 gvfs-mtp gvfs-nfs intel-media-sdk libappindicator libayatana-appindicator loupe malcontent mission-center modemmanager networkmanager noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra orca papers pipewire-alsa pipewire-jack plymouth podman proton-vpn-gtk-app qemu-full qemu-user-static-binfmt rygel snapshot sof-firmware system-config-printer throttled ttf-noto-nerd tuned-ppd virt-manager vulkan-intel unrar usb_modeswitch zip zram-generator
+pacman -Syu --needed gdm gnome-control-center 7zip alsa-firmware alsa-utils baobab cdrtools crun dconf-editor evolution-data-server file-roller gnome-browser-connector gnome-characters gnome-firmware gnome-keyring gnome-remote-desktop gnome-shell-extension-appindicator gnome-software gnome-themes-extra gnome-tweaks gnome-user-share gst-plugin-va gst-plugins-bad gst-plugins-ugly guestfs-tools gvfs-afc gvfs-google gvfs-onedrive gvfs-gphoto2 gvfs-mtp gvfs-nfs intel-media-sdk libappindicator libayatana-appindicator loupe malcontent mission-center modemmanager networkmanager noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra orca papers pipewire-alsa pipewire-jack plymouth podman proton-vpn-gtk-app qemu-full qemu-user-static-binfmt rygel snapshot sof-firmware system-config-printer throttled ttf-noto-nerd tuned-ppd virt-manager vulkan-intel unrar usb_modeswitch zip zram-generator
 
 pacman -Syu --needed ardour arch-wiki-docs bluez-cups bluez-utils calf cronie cups-pdf distrobox dnsmasq easyeffects fastfetch firefox firewall-applet ghostty gimp github-cli gparted hunspell-en_us inetutils iotas lazygit libreoffice-fresh lsp-plugins-lv2 mda.lv2 mpv net-tools obs-studio onnxruntime-cpu qalculate-gtk qbittorrent qt6-multimedia-gstreamer radvd rnote rust swtpm telegram-desktop thunderbird trash-cli wl-clipboard yt-dlp zam-plugins-lv2 zed
 

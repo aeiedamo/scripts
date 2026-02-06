@@ -67,6 +67,8 @@ printf '%s\n' 'export XDG_DATA_DIRS="${XDG_DATA_DIRS}:/var/lib/flatpak/exports/s
 
 printf '%s\n%s\n' '[uefi_capsule]' 'DisableShimForSecureBoot=true' | tee /etc/fwupd/fwupd.conf
 
+printf '%s\n%s\n' '[main]' 'dns=systemd-resolved' | tee /etc/NetworkManager/conf.d/dns.conf
+
 mv /opt/configs/systemd/logind.conf.d /etc/systemd/
 
 mv /opt/configs/fonts/local.conf /etc/fonts/

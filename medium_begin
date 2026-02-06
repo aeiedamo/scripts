@@ -3,7 +3,7 @@
 blkdiscard -fz /dev/sda
 partprobe /dev/sda
 
-sgdisk -n 1:0:+1G -c 1:'BOOT' -t 1:ef00 -n 2:0:0 -c 2:'DM0' -t 2:8304 /dev/sda
+sgdisk -n 1:0:+1G -c 1:'BOOT' -t 1:ef00 -n 2:0:0 -c 2:'ROOT' -t 2:8304 /dev/sda
 
 mkfs.fat -F 32 -n 'BOOT' /dev/sda1
 

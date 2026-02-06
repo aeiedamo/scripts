@@ -53,6 +53,8 @@ printf '%s\n' 'export XDG_CONFIG_HOME="$HOME/.config"' | tee /etc/profile.d/02-x
 
 printf '%s\n' 'export XDG_DATA_DIRS="${XDG_DATA_DIRS}:/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share"' | tee /etc/profile.d/03-flatpak.sh
 
+printf '%s\n%s\n' '[main]' 'dns=systemd-resolved' | tee /etc/NetworkManager/conf.d/dns.conf
+
 mv /opt/configs/systemd/logind.conf.d /etc/systemd/
 
 mv /opt/configs/fonts/local.conf /etc/fonts/

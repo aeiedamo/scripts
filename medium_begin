@@ -16,7 +16,7 @@ mount -o 'compress=zstd,subvol=/@' /dev/sda2 /mnt
 mount -m -o 'compress=zstd,subvol=/@var' /dev/sda2 /mnt/var
 mount -m -o 'compress=zstd,subvol=/@home' /dev/sda2 /mnt/home
 mount -m -o 'compress=zstd,subvol=/@snapshots' /dev/sda2 /mnt/.snapshots
-mount -m -o 'nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077' /dev/sda2 /mnt/boot
+mount -m -o 'nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077' /dev/sda1 /mnt/boot
 
 pacstrap -KM /mnt base iptables
 

@@ -55,6 +55,8 @@ printf '%s\n' 'export XDG_DATA_DIRS="${XDG_DATA_DIRS}:/var/lib/flatpak/exports/s
 
 printf '%s\n%s\n' '[main]' 'dns=systemd-resolved' | tee /etc/NetworkManager/conf.d/dns.conf
 
+sed -i -e 's/#AutoEnable=true/AutoEnable=false/' /etc/bluetooth/main.conf
+
 cp -r /opt/configs/systemd/logind.conf.d /etc/systemd/
 
 cp /opt/configs/fonts/local.conf /etc/fonts/

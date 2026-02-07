@@ -69,8 +69,6 @@ printf '%s\n%s\n' '[uefi_capsule]' 'DisableShimForSecureBoot=true' | tee /etc/fw
 
 printf '%s\n%s\n' '[main]' 'dns=systemd-resolved' | tee /etc/NetworkManager/conf.d/dns.conf
 
-sed -i -e 's/#AutoEnable=true/AutoEnable=false/' /etc/bluetooth/main.conf
-
 cp -r /opt/configs/systemd/logind.conf.d /etc/systemd/
 
 cp /opt/configs/fonts/local.conf /etc/fonts/

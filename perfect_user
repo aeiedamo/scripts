@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
-sudo oobe_setup
-sudo rm -f /usr/local/bin/oobe_setup
+sudo perfect_setup
+sudo rm -f /usr/local/bin/perfect_setup
 
 gsettings set org.gnome.desktop.interface font-name 'Sans 10'
 gsettings set org.gnome.desktop.interface document-font-name 'Serif 10'
@@ -32,4 +32,4 @@ makepkg -sicD /tmp/yay-bin
 
 yay -Syu intel-compute-runtime-legacy-bin
 
-sudo rm -f /usr/local/bin/oobe_user
+sudo rm -f /usr/local/bin/perfect_user

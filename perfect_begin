@@ -16,9 +16,9 @@ sgdisk -n 1:0:0 -c 1:'DM1' -t 1:8304 $DISK1
 mkfs.fat -F 32 -n 'BOOT' $BOOT
 
 cryptsetup luksFormat --label 'DM0' -q $DM0
-cryptsetup --allow-discards --persistent open $DM0 DM0
-
 cryptsetup luksFormat --label 'DM1' -q $DM1
+
+cryptsetup --allow-discards --persistent open $DM0 DM0
 cryptsetup --allow-discards --persistent open $DM1 DM1
 
 mkfs.btrfs -f -L 'ROOT' -d raid0 -m raid0 /dev/mapper/DM0 /dev/mapper/DM1
@@ -35,13 +35,13 @@ pacstrap -KM /mnt base iptables
 
 genfstab -U /mnt | tee -a /mnt/etc/fstab
 
-install -m 0755 ./oobe_install /mnt/usr/local/bin/
+install -m 0777 ./perfect_install /mnt/usr/local/bin/
 cp -r ./configs /mnt/opt/
 
-arch-chroot -S /mnt /usr/local/bin/oobe_install
-rm -f /mnt/usr/local/bin/oobe_install
+arch-chroot -S /mnt /usr/local/bin/perfect_install
+rm -f /mnt/usr/local/bin/perfect_install
 
-install -m 0755 ./oobe_setup /mnt/usr/local/bin/
-install -m 0755 ./oobe_user /mnt/usr/local/bin/
+install -m 0777 ./perfect_setup /mnt/usr/local/bin/
+install -m 0777 ./perfect_user /mnt/usr/local/bin/
 
 systemctl reboot --firmware-setup

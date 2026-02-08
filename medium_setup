@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 
 fsck.fat /dev/sda1
+
 umount /.snapshots
 rm -fr /.snapshots
 snapper -c root create-config /

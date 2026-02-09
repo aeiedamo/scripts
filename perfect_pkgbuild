@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+git clone --depth 1 'https://aur.archlinux.org/yay-bin.git' /tmp/yay-bin
+makepkg -sicD /tmp/yay-bin
+
+yay -Syu intel-compute-runtime-legacy-bin

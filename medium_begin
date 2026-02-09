@@ -12,23 +12,32 @@ mkfs.btrfs -f -L 'ROOT' -m single /dev/sda2
 mount -o 'compress=zstd' /dev/sda2 /mnt
 btrfs subvolume create /mnt/@ /mnt/@var /mnt/@home /mnt/@snapshots
 umount /mnt
+
 mount -o 'compress=zstd,subvol=/@' /dev/sda2 /mnt
 mount -m -o 'compress=zstd,subvol=/@var' /dev/sda2 /mnt/var
 mount -m -o 'compress=zstd,subvol=/@home' /dev/sda2 /mnt/home
 mount -m -o 'compress=zstd,subvol=/@snapshots' /dev/sda2 /mnt/.snapshots
+mount -m -t tmpfs tmpfs /mnt/tmp
 mount -m -o 'nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077' /dev/sda1 /mnt/boot
 
 pacstrap -KM /mnt base iptables
 
 genfstab -U /mnt | tee -a /mnt/etc/fstab
 
-install -m 0755 ./medium_install /mnt/usr/local/bin/
+install -m 0777 ./medium_install /mnt/usr/local/bin/
 cp -r ./configs /mnt/opt/
 
 arch-chroot -S /mnt /usr/local/bin/medium_install
 rm -f /mnt/usr/local/bin/medium_install
 
-install -m 0755 ./medium_setup /mnt/usr/local/bin/
-install -m 0755 ./medium_user /mnt/usr/local/bin/
+install -m 0777 ./perfect_pkgbuild /mnt/usr/local/bin/
+arch-chroot -Su am /mnt /usr/local/bin/perfect_pkgbuild
+rm -f /mnt/usr/local/bin/perfect_pkgbuild
 
+install -m 0777 ./medium_setup /mnt/usr/local/bin/
+install -m 0777 ./medium_user /mnt/usr/local/bin/
+
+sync
+pkill 'gpg-agent'
+umount -R /mnt
 systemctl reboot --firmware-setup

@@ -22,13 +22,16 @@ cryptsetup --allow-discards --persistent open $DM0 DM0
 cryptsetup --allow-discards --persistent open $DM1 DM1
 
 mkfs.btrfs -f -L 'ROOT' -d raid0 -m raid0 /dev/mapper/DM0 /dev/mapper/DM1
+
 mount -o 'compress=zstd' /dev/mapper/DM0 /mnt
 btrfs subvolume create /mnt/@ /mnt/@var /mnt/@home /mnt/@snapshots
 umount /mnt
+
 mount -o 'compress=zstd,subvol=/@' /dev/mapper/DM0 /mnt
 mount -m -o 'compress=zstd,subvol=/@var' /dev/mapper/DM0 /mnt/var
 mount -m -o 'compress=zstd,subvol=/@home' /dev/mapper/DM0 /mnt/home
 mount -m -o 'compress=zstd,subvol=/@snapshots' /dev/mapper/DM0 /mnt/.snapshots
+mount -m -t tmpfs tmpfs /mnt/tmp
 mount -m -o 'nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077' $BOOT /mnt/boot
 
 pacstrap -KM /mnt base iptables
@@ -41,7 +44,16 @@ cp -r ./configs /mnt/opt/
 arch-chroot -S /mnt /usr/local/bin/perfect_install
 rm -f /mnt/usr/local/bin/perfect_install
 
+install -m 0777 ./perfect_pkgbuild /mnt/usr/local/bin/
+arch-chroot -Su am /mnt /usr/local/bin/perfect_pkgbuild
+rm -f /mnt/usr/local/bin/perfect_pkgbuild
+
 install -m 0777 ./perfect_setup /mnt/usr/local/bin/
 install -m 0777 ./perfect_user /mnt/usr/local/bin/
 
+sync
+pkill 'gpg-agent'
+umount -R /mnt
+cryptsetup close DM0
+cryptsetup close DM1
 systemctl reboot --firmware-setup

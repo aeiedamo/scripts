@@ -10,8 +10,8 @@ nvme format /dev/nvme0 -f -n 1 -l 0 -s 1 -r
 nvme format /dev/nvme1 -f -n 1 -l 0 -s 1 -r
 partprobe $DISK0 $DISK1
 
-sgdisk -n 1:0:+1G -c 1:'BOOT' -t 1:ef00 -n 2:0:0 -c 2:'DM0' -t 2:8304 $DISK0
-sgdisk -n 1:0:0 -c 1:'DM1' -t 1:8304 $DISK1
+sgdisk -I -n 1:0:+1G -t 1:ef00 -c 1:'BOOT' -N 2 -t 2:8304 -c 2:'DM0' $DISK0
+sgdisk -I -N 1 -t 1:8304 -c 1:'DM1' $DISK1
 
 mkfs.fat -F 32 -n 'BOOT' $BOOT
 
@@ -31,7 +31,7 @@ mount -o 'compress=zstd,subvol=/@' /dev/mapper/DM0 /mnt
 mount -m -o 'compress=zstd,subvol=/@var' /dev/mapper/DM0 /mnt/var
 mount -m -o 'compress=zstd,subvol=/@home' /dev/mapper/DM0 /mnt/home
 mount -m -o 'compress=zstd,subvol=/@snapshots' /dev/mapper/DM0 /mnt/.snapshots
-mount -m -t tmpfs tmpfs /mnt/tmp
+mount -m -t tmpfs -o 'mode=0777' tmpfs /mnt/tmp
 mount -m -o 'nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077' $BOOT /mnt/boot
 
 pacstrap -KM /mnt base iptables
@@ -45,15 +45,14 @@ arch-chroot -S /mnt /usr/local/bin/perfect_install
 rm -f /mnt/usr/local/bin/perfect_install
 
 install -m 0777 ./perfect_pkgbuild /mnt/usr/local/bin/
-arch-chroot -Su am /mnt /usr/local/bin/perfect_pkgbuild
+arch-chroot -S -u am /mnt /usr/local/bin/perfect_pkgbuild
 rm -f /mnt/usr/local/bin/perfect_pkgbuild
 
 install -m 0777 ./perfect_setup /mnt/usr/local/bin/
 install -m 0777 ./perfect_user /mnt/usr/local/bin/
 
-sync
-pkill 'gpg-agent'
-umount -R /mnt
+umount /mnt/boot
+umount -lR /mnt
 cryptsetup close DM0
 cryptsetup close DM1
-systemctl reboot --firmware-setup
+systemctl poweroff --firmware-setup

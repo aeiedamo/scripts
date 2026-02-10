@@ -14,5 +14,10 @@ cp -r /opt/configs/backgrounds/ $XDG_DATA_HOME
 cp -r /opt/configs/user/ghostty $XDG_CONFIG_HOME
 cp -r /opt/configs/user/firefox/* $XDG_CONFIG_HOME/mozilla/firefox/*.default-release/
 
+git clone --depth 1 'https://aur.archlinux.org/yay-bin.git' /tmp/yay-bin
+makepkg -sicD /tmp/yay-bin
+
+yay -Syu intel-compute-runtime-legacy-bin
+
 sudo rm -fr /opt/configs
 sudo rm -f /usr/local/bin/medium_user

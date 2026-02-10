@@ -26,4 +26,9 @@ git config set --global user.signingkey "$(gpg -K --keyid-format long | grep 'se
 git config set --global commit.gpgsign true
 git config set --global tag.gpgSign true
 
+git clone --depth 1 'https://aur.archlinux.org/yay-bin.git' /tmp/yay-bin
+makepkg -sicD /tmp/yay-bin
+
+yay -Syu intel-compute-runtime-legacy-bin
+
 sudo rm -f /usr/local/bin/perfect_user

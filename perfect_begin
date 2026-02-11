@@ -39,7 +39,7 @@ pacstrap -KM /mnt base iptables
 genfstab -U /mnt | tee -a /mnt/etc/fstab
 
 install -m 0777 ./perfect_install /mnt/usr/local/bin/
-cp -r ./configs /mnt/opt/
+cp -a ./configs /mnt/opt/
 
 arch-chroot -S /mnt /usr/local/bin/perfect_install
 rm -f /mnt/usr/local/bin/perfect_install

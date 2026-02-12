@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+
+git clone --depth 1 'https://github.com/aeiedamo/scripts' /tmp/scripts
+
+cd /tmp/scripts
+
+./perfect_begin

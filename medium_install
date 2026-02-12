@@ -49,7 +49,7 @@ printf '%s\n' 'ListenAddress aeiedamo.local' | tee /etc/ssh/sshd_config.d/00-loc
 
 printf '%s\n' 'export EDITOR=vim VISUAL=vim' | tee /etc/profile.d/01-editor.sh
 
-printf '%s\n' 'export XDG_CONFIG_HOME="$HOME/.config" XDG_DATA_HOME="$HOME/.local/share" XDG_STATE_HOME="HOME/.local/state"' | tee /etc/profile.d/02-xdg.sh
+printf '%s\n' 'export XDG_CONFIG_HOME="${HOME}/.config" XDG_DATA_HOME="${HOME}/.local/share" XDG_STATE_HOME="${HOME}/.local/state"' | tee /etc/profile.d/02-xdg.sh
 
 printf '%s\n' 'export XDG_DATA_DIRS="${XDG_DATA_DIRS}:/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share"' | tee /etc/profile.d/03-flatpak.sh
 

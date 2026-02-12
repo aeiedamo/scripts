@@ -8,8 +8,8 @@ DM1="${DISK1}p1"
 
 fsck.fat -a ${BOOT}
 
-systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-pcrs 7 $DM0
-systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-pcrs 7 $DM1
+systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-pcrs 7 ${DM0}
+systemd-cryptenroll --tpm2-device /dev/tpmrm0 --tpm2-pcrs 7 ${DM1}
 
 umount /.snapshots
 rm -fr /.snapshots

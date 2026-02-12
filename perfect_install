@@ -34,7 +34,7 @@ sbctl sign -s -o /usr/lib/systemd/boot/efi/systemd-bootx64.efi.signed /usr/lib/s
 
 bootctl install
 
-printf '%s\t%s\n%s\t%s\n%s\t%s\n%s\t%s%s%s %s%s%s %s %s%s %s %s %s\n' 'title' 'Arch Linux' 'linux' '/vmlinuz-linux' 'initrd' '/initramfs-linux.img' 'options' 'rd.luks.name=' "$(lsblk -dno UUID $DM0)" '=DM0' 'rd.luks.name=' "$(lsblk -dno UUID $DM1)" '=DM1' 'rd.luks.options=tpm2-device=/dev/tpmrm0' 'root=UUID=' "$(lsblk -dno UUID /dev/mapper/DM0)" 'rw rootflags=compress=zstd,subvol=/@' 'lsm=landlock,lockdown,yama,integrity,apparmor,bpf' 'quiet splash' | tee /boot/loader/entries/arch-linux.conf
+printf '%s\t%s\n%s\t%s\n%s\t%s\n%s\t%s%s%s %s%s%s %s %s%s %s %s %s\n' 'title' 'Arch Linux' 'linux' '/vmlinuz-linux' 'initrd' '/initramfs-linux.img' 'options' 'rd.luks.name=' "$(lsblk -dno UUID ${DM0})" '=DM0' 'rd.luks.name=' "$(lsblk -dno UUID ${DM1})" '=DM1' 'rd.luks.options=tpm2-device=/dev/tpmrm0' 'root=UUID=' "$(lsblk -dno UUID /dev/mapper/DM0)" 'rw rootflags=compress=zstd,subvol=/@' 'lsm=landlock,lockdown,yama,integrity,apparmor,bpf' 'quiet splash' | tee /boot/loader/entries/arch-linux.conf
 
 printf '%s\t%s\n' 'default' 'arch-linux.conf' | tee /boot/loader/loader.conf
 
@@ -63,7 +63,7 @@ printf '%s\n' 'ListenAddress aeiedamo.local' | tee /etc/ssh/sshd_config.d/00-loc
 
 printf '%s\n' 'export EDITOR=vim VISUAL=vim' | tee /etc/profile.d/01-editor.sh
 
-printf '%s\n' 'export XDG_CONFIG_HOME="$HOME/.config" XDG_DATA_HOME="$HOME/.local/share" XDG_STATE_HOME="HOME/.local/state"' | tee /etc/profile.d/02-xdg.sh
+printf '%s\n' 'export XDG_CONFIG_HOME="${HOME}/.config" XDG_DATA_HOME="${HOME}/.local/share" XDG_STATE_HOME="${HOME}/.local/state"' | tee /etc/profile.d/02-xdg.sh
 
 printf '%s\n' 'export XDG_DATA_DIRS="${XDG_DATA_DIRS}:/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share"' | tee /etc/profile.d/03-flatpak.sh
 

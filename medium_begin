@@ -18,7 +18,6 @@ mount -m -o 'compress=zstd,subvol=/@var' /dev/sda2 /mnt/var
 mount -m -o 'compress=zstd,subvol=/@home' /dev/sda2 /mnt/home
 mount -m -o 'compress=zstd,subvol=/@snapshots' /dev/sda2 /mnt/.snapshots
 mount -m -o 'nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077' /dev/sda1 /mnt/boot
-fsck.fat -a /dev/sda1
 
 pacstrap -KM /mnt base iptables
 
@@ -33,6 +32,6 @@ rm -f /mnt/usr/local/bin/medium_install
 install -m 0777 ./medium_setup /mnt/usr/local/bin/
 install -m 0777 ./medium_user /mnt/usr/local/bin/
 
-umount /mnt/boot
-umount -lR /mnt
+pkill gpg-agent
+umount -R /mnt
 systemctl reboot --firmware-setup

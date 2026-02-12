@@ -32,7 +32,6 @@ mount -m -o 'compress=zstd,subvol=/@var' /dev/mapper/DM0 /mnt/var
 mount -m -o 'compress=zstd,subvol=/@home' /dev/mapper/DM0 /mnt/home
 mount -m -o 'compress=zstd,subvol=/@snapshots' /dev/mapper/DM0 /mnt/.snapshots
 mount -m -o 'nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077' $BOOT /mnt/boot
-fsck.fat -a ${BOOT}
 
 pacstrap -KM /mnt base iptables
 
@@ -47,7 +46,8 @@ rm -f /mnt/usr/local/bin/perfect_install
 install -m 0777 ./perfect_setup /mnt/usr/local/bin/
 install -m 0777 ./perfect_user /mnt/usr/local/bin/
 
-umount -lR /mnt
+pkill gpg-agent
+umount -R /mnt
 cryptsetup close DM0
 cryptsetup close DM1
 systemctl poweroff --firmware-setup

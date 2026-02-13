@@ -14,21 +14,17 @@ sed -i -e '/^#NoExtract/s/$/ boot\/intel-ucode.img/' -e '/^#NoExtract/s/^#// ' -
 printf '%s\n' 'Server = https://mirror.pkgbuild.com/$repo/os/$arch' | tee /etc/pacman.d/mirrorlist
 sed -i -e 's/^MAKEFLAGS.*/MAKEFLAGS="-j8"/' -e '/^#BUILDDIR/s/^#//' -e '/^OPTIONS/s/debug/!&/' /etc/makepkg.conf
 
-pacman -Syu --noconfirm base-devel bash-completion devtools dosfstools edk2-shell efibootmgr firejail intel-ucode linux linux-firmware linux-headers linux-tools-meta man-db mkinitcpio nvme-cli snap-pac wireless-regdb
-
 sed -i -e '/^HOOKS/s/keymap/plymouth/' /etc/mkinitcpio.conf
 
-sed -i -e '/SA/s/^#//' /etc/conf.d/wireless-regdom
+pacman -Syu --noconfirm linux linux-headers linux-firmware intel-ucode guestfs-tools plymouth qemu-full qemu-user-static-binfmt snap-pac sof-firmware wireless-regdb alsa-firmware alsa-utils base-devel devtools networkmanager noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-noto-nerd gdm gnome-control-center virt-manager 7zip arch-wiki-docs ardour baobab bash-completion bluez-cups bluez-utils calf cdrtools cronie crun cups-pdf dconf-editor distrobox dnsmasq easyeffects edk2-shell efibootmgr evolution-ews evolution-spamassassin fastfetch firejail file-roller firefox firewall-applet ghostty gimp github-cli gnome-browser-connector gnome-characters gnome-firmware gnome-keyring gnome-remote-desktop gnome-shell-extension-appindicator gnome-software gnome-themes-extra gnome-tweaks gnome-user-share gparted gst-plugins-bad gst-plugins-ugly gst-plugin-va gvfs-afc gvfs-google gvfs-gphoto2 gvfs-mtp gvfs-nfs gvfs-onedrive hunspell-en_us inetutils intel-media-sdk iotas libappindicator libayatana-appindicator libreoffice-fresh linux-tools-meta loupe lsp-plugins-lv2 malcontent man-db mda.lv2 mission-center modemmanager mpv net-tools nvme-cli obs-studio onnxruntime-cpu orca papers pipewire-alsa pipewire-jack podman proton-vpn-gtk-app qalculate-gtk qbittorrent qt6-multimedia-gstreamer radvd rnote rust rygel seahorse snapshot swtpm system-config-printer telegram-desktop throttled trash-cli tuned-ppd unrar usb_modeswitch vulkan-intel wl-clipboard yt-dlp zam-plugins-lv2 zed zip zram-generator
+
+systemctl enable apparmor bluetooth cronie cups firewalld fwupd-refresh.timer gdm gnome-remote-desktop libvirtd ModemManager NetworkManager sshd systemd-boot-update systemd-resolved systemd-timesyncd throttled tuned tuned-ppd virtnetworkd virtqemud virtstoraged
 
 bootctl install --variables=no
 
 printf '%s\t%s\n%s\t%s\n%s\t%s\n%s\t%s%s %s %s %s\n' 'title' 'Arch Linux' 'linux' '/vmlinuz-linux' 'initrd' '/initramfs-linux.img' 'options' 'root=UUID=' "$(lsblk -dno UUID /dev/sda2)" 'rw rootflags=compress=zstd,subvol=/@' 'lsm=landlock,lockdown,yama,integrity,apparmor,bpf' 'quiet splash' | tee /boot/loader/entries/arch-linux.conf
 
 printf '%s\t%s\n' 'default' 'arch-linux.conf' | tee /boot/loader/loader.conf
-
-pacman -Syu --noconfirm 7zip alsa-firmware alsa-utils arch-wiki-docs ardour baobab bluez-cups bluez-utils calf cdrtools cronie crun cups-pdf dconf-editor distrobox dnsmasq easyeffects evolution-ews evolution-spamassassin fastfetch file-roller firefox firewall-applet gdm ghostty gimp github-cli gnome-browser-connector gnome-characters gnome-control-center gnome-firmware gnome-keyring gnome-remote-desktop gnome-shell-extension-appindicator gnome-software gnome-themes-extra gnome-tweaks gnome-user-share gparted gst-plugins-bad gst-plugins-ugly gst-plugin-va guestfs-tools gvfs-afc gvfs-google gvfs-gphoto2 gvfs-mtp gvfs-nfs gvfs-onedrive hunspell-en_us inetutils intel-media-sdk iotas libappindicator libayatana-appindicator libreoffice-fresh loupe lsp-plugins-lv2 malcontent man-db mda.lv2 mission-center modemmanager mpv net-tools networkmanager noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra obs-studio onnxruntime-cpu orca papers pipewire-alsa pipewire-jack plymouth podman proton-vpn-gtk-app qalculate-gtk qbittorrent qemu-full qemu-user-static-binfmt qt6-multimedia-gstreamer radvd rnote rust rygel seahorse snapshot sof-firmware swtpm system-config-printer telegram-desktop throttled trash-cli ttf-noto-nerd tuned-ppd unrar usb_modeswitch virt-manager vulkan-intel wl-clipboard yt-dlp zam-plugins-lv2 zed zip zram-generator
-
-systemctl enable apparmor bluetooth cronie cups firewalld fwupd-refresh.timer gdm gnome-remote-desktop libvirtd ModemManager NetworkManager sshd systemd-boot-update systemd-resolved systemd-timesyncd throttled tuned tuned-ppd virtnetworkd virtqemud virtstoraged
 
 cp /usr/share/edk2-shell/x64/Shell.efi /boot/shellx64.efi
 
@@ -38,6 +34,8 @@ passwd -d -l root
 
 useradd -c 'AlaEldin Mohamed' -G audio,disk,kvm,libvirt,log,storage,wheel -m am
 passwd am
+
+sed -i -e '/SA/s/^#//' /etc/conf.d/wireless-regdom
 
 printf '%s\n' 'options psmouse synaptics_intertouch=1' | tee /etc/modprobe.d/psmouse.conf
 

@@ -10,8 +10,8 @@ gsettings set org.gnome.desktop.media-handling automount false
 gsettings set org.gnome.desktop.media-handling automount-open false
 gnome-extensions enable 'appindicatorsupport@rgcjonas.gmail.com'
 
-cp -a /opt/configs/backgrounds/ ${XDG_DATA_HOME}
-cp -a /opt/configs/user/ghostty ${XDG_CONFIG_HOME}
+cp -a /opt/configs/backgrounds/. ${XDG_DATA_HOME}/backgrounds/
+cp -a /opt/configs/user/ghostty/. ${XDG_CONFIG_HOME}/ghostty/
 cp -a /opt/configs/user/firefox/. ${XDG_CONFIG_HOME}/mozilla/firefox/*.default-release/
 
 sudo rm -fr /opt/configs

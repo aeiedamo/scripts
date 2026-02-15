@@ -19,7 +19,7 @@ mount -m -o 'compress=zstd,subvol=/@home' /dev/sda2 /mnt/home
 mount -m -o 'compress=zstd,subvol=/@snapshots' /dev/sda2 /mnt/.snapshots
 mount -m -o 'nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077' /dev/sda1 /mnt/boot
 
-pacstrap -KM /mnt base iptables
+pacstrap -KM /mnt base iptables mkinitcpio
 
 genfstab -U /mnt | tee -a /mnt/etc/fstab
 

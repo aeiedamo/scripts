@@ -10,8 +10,8 @@ gsettings set org.gnome.desktop.media-handling automount false
 gsettings set org.gnome.desktop.media-handling automount-open false
 gnome-extensions enable 'appindicatorsupport@rgcjonas.gmail.com'
 
-cp -a /opt/configs/backgrounds/. ${XDG_DATA_HOME}/backgrounds/
-cp -a /opt/configs/user/ghostty/. ${XDG_CONFIG_HOME}/ghostty/
+printf '%s\n%s\n%s\n%s\n' 'font-family=monospace' 'font-size=10' 'theme=Gruvbox Material Light' 'fullscreen=true' | tee -a ${XDG_CONFIG_HOME}/ghostty/config
+curl -L -o ${XDG_DATA_HOME}/backgrounds/default-background.jpg -R 'https://unsplash.com/photos/81-Nkgo5UOo/download?force=true&w=1920'
 cp -a /opt/configs/user/firefox/. ${XDG_CONFIG_HOME}/mozilla/firefox/*.default-release/
 
 sudo rm -fr /opt/configs

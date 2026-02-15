@@ -22,7 +22,7 @@ sed -i -e 's/^MAKEFLAGS.*/MAKEFLAGS="-j8"/' -e '/^#BUILDDIR/s/^#//' -e '/^OPTION
 
 sed -i -e '/^HOOKS/s/systemd/& btrfs/' -e '/^HOOKS/s/keymap/plymouth/' -e '/^HOOKS/s/filesystems/sd-encrypt &/' /etc/mkinitcpio.conf
 
-pacman -Syu --noconfirm linux linux-headers linux-firmware intel-ucode guestfs-tools plymouth qemu-full qemu-user-static-binfmt snap-pac sof-firmware sbctl wireless-regdb alsa-firmware alsa-utils base-devel devtools networkmanager noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-noto-nerd gdm gnome-control-center virt-manager 7zip arch-wiki-docs ardour baobab bash-completion bluez-cups bluez-utils calf cdrtools cronie crun cups-pdf dconf-editor distrobox dnsmasq easyeffects ebook-tools edk2-shell efibootmgr evolution-ews evolution-spamassassin fastfetch firejail file-roller firefox firewall-applet ghostty gimp github-cli gnome-browser-connector gnome-characters gnome-firmware gnome-keyring gnome-remote-desktop gnome-shell-extension-appindicator gnome-software gnome-themes-extra gnome-tweaks gnome-user-share gparted gst-plugins-bad gst-plugins-ugly gst-plugin-va gvfs-afc gvfs-google gvfs-gphoto2 gvfs-mtp gvfs-nfs gvfs-onedrive hunspell-en_us inetutils intel-media-sdk kdenlive libappindicator libayatana-appindicator libreoffice-fresh linux-tools-meta loupe lsp-plugins-lv2 malcontent man-db mda.lv2 mission-center modemmanager mpv net-tools nvme-cli obs-studio onnxruntime-cpu obsidian okular orca pipewire-alsa pipewire-jack podman proton-vpn-gtk-app qalculate-gtk qbittorrent qt6-multimedia-gstreamer radvd rnote rust rygel seahorse snapshot swtpm system-config-printer telegram-desktop throttled trash-cli tuned-ppd unrar usb_modeswitch vulkan-intel wl-clipboard yt-dlp zam-plugins-lv2 zed zip zram-generator
+pacman -Syu --noconfirm linux linux-headers linux-firmware intel-ucode guestfs-tools plymouth qemu-full qemu-user-static-binfmt snap-pac sof-firmware sbctl wireless-regdb alsa-firmware alsa-utils base-devel devtools networkmanager noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-noto-nerd gdm gnome-control-center virt-manager 7zip arch-wiki-docs ardour baobab bash-completion bluez-cups bluez-utils btrfs-assistant calf cdrtools cronie crun cups-pdf dconf-editor distrobox dnsmasq easyeffects ebook-tools edk2-shell efibootmgr evolution-ews evolution-spamassassin fastfetch firejail file-roller firefox firewall-applet ghostty gimp github-cli gnome-browser-connector gnome-characters gnome-firmware gnome-keyring gnome-remote-desktop gnome-shell-extension-appindicator gnome-software gnome-themes-extra gnome-tweaks gnome-user-share gparted gst-plugins-bad gst-plugins-ugly gst-plugin-va gvfs-afc gvfs-google gvfs-gphoto2 gvfs-mtp gvfs-nfs gvfs-onedrive hunspell-en_us inetutils intel-media-sdk kdenlive libappindicator libayatana-appindicator libreoffice-fresh linux-tools-meta loupe lsp-plugins-lv2 malcontent man-db mda.lv2 mission-center modemmanager mpv net-tools nvme-cli obs-studio onnxruntime-cpu obsidian okular orca pipewire-alsa pipewire-jack podman proton-vpn-gtk-app qalculate-gtk qbittorrent qt6-multimedia-gstreamer radvd rnote rust rygel seahorse snapshot swtpm system-config-printer telegram-desktop throttled trash-cli tuned-ppd unrar usb_modeswitch vulkan-intel wl-clipboard yt-dlp zam-plugins-lv2 zed zip zram-generator
 
 systemctl enable apparmor bluetooth cronie cups firewalld fstrim.timer fwupd-refresh.timer gdm libvirtd ModemManager NetworkManager systemd-boot-update systemd-resolved systemd-timesyncd throttled tuned tuned-ppd virtnetworkd virtqemud virtstoraged
 
@@ -53,10 +53,12 @@ sed -i -e '/SA/s/^#//' /etc/conf.d/wireless-regdom
 printf '%s\n' 'options psmouse synaptics_intertouch=1' | tee /etc/modprobe.d/psmouse.conf
 
 printf '%s\n%s\n%s\n' '[zram0]' 'zram-size=ram' 'compression-algorithm=zstd' | tee /etc/systemd/zram-generator.conf
+mkdir -p /etc/systemd/logind.conf.d/
+printf '%s\n%s\n%s\n' '[Login]' 'HandleLidSwitch=ignore' 'HandleLidSwitchExternalPower=ignore' | tee /etc/systemd/logind.conf.d/lid.conf
 
 printf '%s\n' 'ListenAddress aeiedamo.local' | tee /etc/ssh/sshd_config.d/00-local.conf
 
-printf '%s\n' 'export EDITOR=vim VISUAL=vim' | tee /etc/profile.d/01-editor.sh
+printf '%s\n' "export EDITOR='vim' VISUAL='vim'" | tee /etc/profile.d/01-editor.sh
 
 printf '%s\n' 'export XDG_CONFIG_HOME="${HOME}/.config" XDG_DATA_HOME="${HOME}/.local/share" XDG_STATE_HOME="${HOME}/.local/state"' | tee /etc/profile.d/02-xdg.sh
 
@@ -68,10 +70,13 @@ printf '%s\n%s\n' '[uefi_capsule]' 'DisableShimForSecureBoot=true' | tee /etc/fw
 
 printf '%s\n%s\n' '[main]' 'dns=systemd-resolved' | tee /etc/NetworkManager/conf.d/dns.conf
 
-cp -a /opt/configs/systemd/logind.conf.d /etc/systemd/
-
 cp /opt/configs/fonts/local.conf /etc/fonts/
 
-cp /opt/configs/gdm/gdm /etc/dconf/profile/
-cp -a /opt/configs/gdm/gdm.d /etc/dconf/db/
+printf '%s\n%s\n%s\n' 'user-db:user' 'system-db:gdm' 'file-db:/usr/share/gdm/greeter-dconf-defaults' | tee /etc/dconf/profile/gdm
+
+mkdir -p /etc/dconf/db/gdm.d/
+printf '%s\n%s\n' '[org/gnome/desktop/interface]' "font-name='Sans 10'" | tee /etc/dconf/db/gdm.d/01-fonts
+printf '%s\n%s\n' '[org/gnome/desktop/interface]' 'show-battery-percentage=true' | tee /etc/dconf/db/gdm.d/02-batterypercentage
+printf '%s\n%s\n' '[org/gnome/login-screen]' "logo=''" | tee /etc/dconf/db/gdm.d/03-logo
+
 dconf update

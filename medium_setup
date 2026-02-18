@@ -12,4 +12,4 @@ btrfs subvolume delete /.snapshots
 mkdir /.snapshots
 mount -a
 systemctl daemon-reload
-systemctl enable snapper-boot.timer snapper-cleanup.timer
+systemctl enable snapper-boot.timer snapper-cleanup.timer snapper-timeline.timer

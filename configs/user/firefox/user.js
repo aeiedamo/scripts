@@ -1,7 +1,6 @@
 // user_pref("",);
 
 // Fonts settings
-user_pref("browser.display.use_document_fonts", 0);
 user_pref("font.default.ar", "sans-serif");
 user_pref("font.default.x-western", "sans-serif");
 

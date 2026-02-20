@@ -11,6 +11,7 @@ gsettings set org.gnome.desktop.media-handling automount-open false
 curl -L -o "${XDG_DATA_HOME}/backgrounds/default.jpg" -R -s 'https://unsplash.com/photos/pJ-mNWCg4qo/download?force=true&w=1920'
 gsettings set org.gnome.desktop.background picture-uri "file://${XDG_DATA_HOME}/backgrounds/default.jpg"
 gsettings set org.gnome.desktop.background picture-uri-dark "file://${XDG_DATA_HOME}/backgrounds/default.jpg"
+gsettings set org.gnome.SessionManager logout-prompt false
 gnome-extensions enable 'appindicatorsupport@rgcjonas.gmail.com'
 
 printf '%s\n%s\n%s\n%s\n' 'font-family=monospace' 'font-size=10' 'theme=Gruvbox Material Light' 'fullscreen=true' | tee -a ${XDG_CONFIG_HOME}/ghostty/config

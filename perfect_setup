@@ -13,8 +13,6 @@ umount /.snapshots
 rm -fr /.snapshots
 snapper -c root create-config /
 snapper -c root set-config 'ALLOW_GROUPS=wheel' 'SYNC_ACL=yes' 'TIMELINE_LIMIT_HOURLY=3' 'TIMELINE_LIMIT_DAILY=3' 'TIMELINE_LIMIT_MONTHLY=0' 'TIMELINE_LIMIT_YEARLY=0' 'NUMBER_LIMIT=15'
-snapper -c var create-config /var
-snapper -c var set-config 'ALLOW_GROUPS=wheel' 'SYNC_ACL=yes' 'TIMELINE_LIMIT_HOURLY=3' 'TIMELINE_LIMIT_DAILY=3' 'TIMELINE_LIMIT_MONTHLY=0' 'TIMELINE_LIMIT_YEARLY=0' 'NUMBER_LIMIT=15'
 snapper -c home create-config /home
 snapper -c home set-config 'ALLOW_GROUPS=wheel' 'SYNC_ACL=yes' 'TIMELINE_LIMIT_HOURLY=3' 'TIMELINE_LIMIT_DAILY=3' 'TIMELINE_LIMIT_MONTHLY=0' 'TIMELINE_LIMIT_YEARLY=0' 'NUMBER_LIMIT=15'
 btrfs subvolume delete /.snapshots

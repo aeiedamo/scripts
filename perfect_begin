@@ -33,6 +33,8 @@ mount -m -o 'compress=zstd,subvol=/@home' /dev/mapper/DM0 /mnt/home
 mount -m -o 'compress=zstd,subvol=/@snapshots' /dev/mapper/DM0 /mnt/.snapshots
 mount -m -o 'nosuid,nodev,noexec,nosymfollow,fmask=0177,dmask=0077' ${BOOT} /mnt/boot
 
+chattr +C /mnt/var
+
 pacstrap -KM /mnt base iptables mkinitcpio
 
 genfstab -U /mnt | tee -a /mnt/etc/fstab

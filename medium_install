@@ -62,7 +62,7 @@ sed -i -e '/^hosts/s/resolve \[\!UNAVAIL=return\]/mdns_minimal \[NOTFOUND=return
 printf '%s\n%s\n' '[main]' 'dns=systemd-resolved' | tee /etc/NetworkManager/conf.d/dns.conf
 printf '%s\n%s\n' '[device]' 'wifi.backend=iwd' | tee /etc/NetworkManager/conf.d/wifi_backend.conf
 
-cp /opt/configs/fonts/local.conf /etc/fonts/
+mv /opt/configs/fonts/local.conf /etc/fonts/
 
 sed -i -e '/^PercentageLow/s/=.*$/=10.0/' -e '/^CriticalPowerAction/s/HybridSleep/PowerOff/' /etc/UPower/UPower.conf
 
@@ -74,6 +74,11 @@ printf '%s\n%s\n' '[org/gnome/desktop/interface]' 'show-battery-percentage=true'
 printf '%s\n%s\n' '[org/gnome/login-screen]' "logo=''" | tee /etc/dconf/db/gdm.d/03-logo
 
 dconf update
+
+printf '%s\n%s\n' 'pref("general.config.filename", "firefox.cfg");' 'pref("general.config.obscure_value", 0);' | tee /usr/lib/firefox/defaults/pref/autoconfig.js
+mv /opt/configs/firefox/firefox.cfg /usr/lib/firefox/
+
+rm -f -r /opt/configs
 
 printf '%s\n' '--cookies-from-browser firefox -f "bv+ba/b" -S "ext" -o "${HOME}/Videos/%(webpage_url_domain)s/%(id)s-%(title)s.%(ext)s"' | tee /etc/yt-dlp.conf
 

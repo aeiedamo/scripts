@@ -17,8 +17,6 @@ gnome-extensions enable 'appindicatorsupport@rgcjonas.gmail.com'
 printf '%s\n%s\n%s\n%s\n' 'font-family=monospace' 'font-size=10' 'theme=Gruvbox Material Light' 'fullscreen=true' | tee -a ${XDG_CONFIG_HOME}/ghostty/config
 cp -a /opt/configs/user/firefox/. ${XDG_CONFIG_HOME}/mozilla/firefox/*.default-release/
 
-sudo rm -fr /opt/configs
-
 ssh-keygen
 gpg --full-gen-key
 GPGKEY="$(gpg -K --keyid-format long | grep 'sec' | cut -d '/' -f2 | cut -d ' ' -f1)"

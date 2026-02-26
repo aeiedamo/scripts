@@ -15,7 +15,6 @@ gsettings set org.gnome.SessionManager logout-prompt false
 gnome-extensions enable 'appindicatorsupport@rgcjonas.gmail.com'
 
 printf '%s\n%s\n%s\n%s\n' 'font-family=monospace' 'font-size=10' 'theme=Gruvbox Material Light' 'fullscreen=true' | tee -a ${XDG_CONFIG_HOME}/ghostty/config
-cp -a /opt/configs/user/firefox/. ${XDG_CONFIG_HOME}/mozilla/firefox/*.default-release/
 
 git clone --depth 1 'https://aur.archlinux.org/yay-bin.git' /tmp/yay-bin
 makepkg -sicD /tmp/yay-bin

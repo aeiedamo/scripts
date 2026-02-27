@@ -5,7 +5,7 @@ DISK1="$(realpath /dev/disk/by-id/nvme-eui.e8238fa6bf530001001b448b47f32f0c)"
 BOOT="${DISK0}p1"
 DM0="${DISK0}p2"
 DM1="${DISK1}p1"
-ROOT="$(lsblk -dno UUID /dev/mapper/DM0)"
+UUID="$(lsblk -dno UUID /dev/mapper/root)"
 
 sed -i -e '/^#en_US.UTF-8/s/^#//' -e '/^#ar_EG.UTF-8/s/^#//' /etc/locale.gen
 locale-gen
@@ -36,12 +36,12 @@ bootctl install
 
 printf '%s\t%s\n' 'default' 'arch-linux.conf' | tee /boot/loader/loader.conf
 
-printf '%s\t%s\n%s\t%s\n%s\t%s\n%s\t%s%s%s %s%s%s %s %s%s %s %s %s\n' 'title' 'Arch Linux' 'linux' '/vmlinuz-linux' 'initrd' '/initramfs-linux.img' 'options' 'rd.luks.name=' "$(lsblk -dno UUID ${DM0})" '=DM0' 'rd.luks.name=' "$(lsblk -dno UUID ${DM1})" '=DM1' 'rd.luks.options=tpm2-device=/dev/tpmrm0' 'root=UUID=' "${ROOT}" 'rw rootflags=compress=zstd,subvol=/@' 'lsm=landlock,lockdown,yama,integrity,apparmor,bpf' 'quiet splash' | tee /boot/loader/entries/arch-linux.conf
+printf '%s\t%s\n%s\t%s\n%s\t%s\n%s\t%s%s%s %s%s%s %s %s%s %s %s %s\n' 'title' 'Arch Linux' 'linux' '/vmlinuz-linux' 'initrd' '/initramfs-linux.img' 'options' 'rd.luks.name=' "$(lsblk -dno UUID ${DM0})" '=root' 'rd.luks.name=' "$(lsblk -dno UUID ${DM1})" '=aux' 'rd.luks.options=tpm2-device=/dev/tpmrm0' 'root=UUID=' "${UUID}" 'rw rootflags=compress=zstd,subvol=/@' 'lsm=landlock,lockdown,yama,integrity,apparmor,bpf' 'quiet splash' | tee /boot/loader/entries/arch-linux.conf
 
 cp /usr/share/edk2-shell/x64/Shell.efi /boot/shellx64.efi
 
 mv /etc/bees/beesd.conf.sample /etc/bees/beesd.conf
-sed -i -e "/^UUID/s/=.*$/=${ROOT}/" -e '/^# DB_SIZE/s/^# //' /etc/bees/beesd.conf
+sed -i -e "/^UUID/s/=.*$/=${UUID}/" -e '/^# DB_SIZE/s/^# //' /etc/bees/beesd.conf
 
 printf '%s\n' '%wheel ALL=(ALL:ALL) ALL' | tee /etc/sudoers.d/01-wheel
 
@@ -97,4 +97,4 @@ rm -f -r /opt/configs
 
 printf '%s\n' '--cookies-from-browser firefox -f "bv+ba/b" -S "ext" -o "${HOME}/Videos/%(webpage_url_domain)s/%(id)s-%(title)s.%(ext)s"' | tee /etc/yt-dlp.conf
 
-systemctl enable apparmor.service avahi-daemon.service bluetooth.service beesd@${ROOT}.service cronie.service cups.service firewalld.service fstrim.timer fwupd-refresh.timer gdm.service gnome-remote-desktop.service libvirtd.service ModemManager.service NetworkManager.service sshd.service systemd-boot-update.service systemd-resolved.service systemd-timesyncd.service throttled.service tuned.service tuned-ppd.service virtnetworkd.service virtqemud.service virtstoraged.service
+systemctl enable apparmor.service avahi-daemon.service bluetooth.service beesd@${UUID}.service cronie.service cups.service firewalld.service fstrim.timer fwupd-refresh.timer gdm.service gnome-remote-desktop.service libvirtd.service ModemManager.service NetworkManager.service sshd.service systemd-boot-update.service systemd-resolved.service systemd-timesyncd.service throttled.service tuned.service tuned-ppd.service virtnetworkd.service virtqemud.service virtstoraged.service

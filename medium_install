@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-ROOT="$(lsblk -dno UUID /dev/sda2)"
+UUID="$(lsblk -dno UUID /dev/sda2)"
 
 sed -i -e '/^#en_US.UTF-8/s/^#//' -e '/^#ar_EG.UTF-8/s/^#//' /etc/locale.gen
 locale-gen
@@ -23,12 +23,12 @@ bootctl install --variables=no
 
 printf '%s\t%s\n' 'default' 'arch-linux.conf' | tee /boot/loader/loader.conf
 
-printf '%s\t%s\n%s\t%s\n%s\t%s\n%s\t%s%s %s %s %s\n' 'title' 'Arch Linux' 'linux' '/vmlinuz-linux' 'initrd' '/initramfs-linux.img' 'options' 'root=UUID=' "${ROOT}" 'rw rootflags=compress=zstd,subvol=/@' 'lsm=landlock,lockdown,yama,integrity,apparmor,bpf' 'quiet splash' | tee /boot/loader/entries/arch-linux.conf
+printf '%s\t%s\n%s\t%s\n%s\t%s\n%s\t%s%s %s %s %s\n' 'title' 'Arch Linux' 'linux' '/vmlinuz-linux' 'initrd' '/initramfs-linux.img' 'options' 'root=UUID=' "${UUID}" 'rw rootflags=compress=zstd,subvol=/@' 'lsm=landlock,lockdown,yama,integrity,apparmor,bpf' 'quiet splash' | tee /boot/loader/entries/arch-linux.conf
 
 cp /usr/share/edk2-shell/x64/Shell.efi /boot/shellx64.efi
 
 mv /etc/bees/beesd.conf.sample /etc/bees/beesd.conf
-sed -i -e "/^UUID/s/=.*$/=${ROOT}/" -e '/^# DB_SIZE/s/^# //' /etc/bees/beesd.conf
+sed -i -e "/^UUID/s/=.*$/=${UUID}/" -e '/^# DB_SIZE/s/^# //' /etc/bees/beesd.conf
 
 printf '%s\n' '%wheel ALL=(ALL:ALL) ALL' | tee /etc/sudoers.d/01-wheel
 

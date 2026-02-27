@@ -28,7 +28,7 @@ printf '%s\t%s\n%s\t%s\n%s\t%s\n%s\t%s%s %s %s %s\n' 'title' 'Arch Linux' 'linux
 cp /usr/share/edk2-shell/x64/Shell.efi /boot/shellx64.efi
 
 mv /etc/bees/beesd.conf.sample /etc/bees/beesd.conf
-sed -i -e "/^UUID/s/=.*$/=${ROOT}/" /etc/bees/beesd.conf
+sed -i -e "/^UUID/s/=.*$/=${ROOT}/" -e '/^# DB_SIZE/s/^# //' /etc/bees/beesd.conf
 
 printf '%s\n' '%wheel ALL=(ALL:ALL) ALL' | tee /etc/sudoers.d/01-wheel
 
@@ -82,4 +82,4 @@ rm -f -r /opt/configs
 
 printf '%s\n' '--cookies-from-browser firefox -f "bv+ba/b" -S "ext" -o "${HOME}/Videos/%(webpage_url_domain)s/%(id)s-%(title)s.%(ext)s"' | tee /etc/yt-dlp.conf
 
-systemctl enable apparmor.service avahi-daemon.service bees@${UUID}.service bluetooth.service cronie.service cups.service firewalld.service fwupd-refresh.timer gdm.service gnome-remote-desktop.service libvirtd.service ModemManager.service NetworkManager.service sshd.service systemd-boot-update.service systemd-resolved.service systemd-timesyncd.service throttled.service tuned.service tuned-ppd.service virtnetworkd.service virtqemud.service virtstoraged.service
+systemctl enable apparmor.service avahi-daemon.service beesd@${UUID}.service bluetooth.service cronie.service cups.service firewalld.service fwupd-refresh.timer gdm.service gnome-remote-desktop.service libvirtd.service ModemManager.service NetworkManager.service sshd.service systemd-boot-update.service systemd-resolved.service systemd-timesyncd.service throttled.service tuned.service tuned-ppd.service virtnetworkd.service virtqemud.service virtstoraged.service

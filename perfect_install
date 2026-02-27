@@ -41,7 +41,7 @@ printf '%s\t%s\n%s\t%s\n%s\t%s\n%s\t%s%s%s %s%s%s %s %s%s %s %s %s\n' 'title' 'A
 cp /usr/share/edk2-shell/x64/Shell.efi /boot/shellx64.efi
 
 mv /etc/bees/beesd.conf.sample /etc/bees/beesd.conf
-sed -i -e "/^UUID/s/=.*$/=${ROOT}/" /etc/bees/beesd.conf
+sed -i -e "/^UUID/s/=.*$/=${ROOT}/" -e '/^# DB_SIZE/s/^# //' /etc/bees/beesd.conf
 
 printf '%s\n' '%wheel ALL=(ALL:ALL) ALL' | tee /etc/sudoers.d/01-wheel
 

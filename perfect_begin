@@ -3,8 +3,8 @@
 DISK0="$(realpath /dev/disk/by-id/nvme-nvme.1e4b-30303335363230303030303532-4e452d3154422032323432-00000001)"
 DISK1="$(realpath /dev/disk/by-id/nvme-eui.e8238fa6bf530001001b448b47f32f0c)"
 BOOT="${DISK0}p1"
-DM0="${DISK0}p2"
-DM1="${DISK1}p1"
+ROOT="${DISK0}p2"
+AUX="${DISK1}p1"
 
 nvme format /dev/nvme0 -f -n 1 -l 0 -s 1 -r
 nvme format /dev/nvme1 -f -n 1 -l 0 -s 1 -r
@@ -15,11 +15,11 @@ sgdisk -I -N 1 -t 1:8304 -c 1:'aux' ${DISK1}
 
 mkfs.fat -F 32 -n 'BOOT' ${BOOT}
 
-cryptsetup luksFormat --label 'root' -q ${DM0}
-cryptsetup luksFormat --label 'aux' -q ${DM1}
+cryptsetup luksFormat --label 'root' -q ${ROOT}
+cryptsetup luksFormat --label 'aux' -q ${AUX}
 
-cryptsetup --allow-discards --persistent open ${DM0} root
-cryptsetup --allow-discards --persistent open ${DM1} aux
+cryptsetup --allow-discards --persistent open ${ROOT} root
+cryptsetup --allow-discards --persistent open ${AUX} aux
 
 mkfs.btrfs -f -L 'root' -d raid0 -m raid0 /dev/mapper/root /dev/mapper/aux
 

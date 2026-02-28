@@ -3,8 +3,8 @@
 DISK0="$(realpath /dev/disk/by-id/nvme-nvme.1e4b-30303335363230303030303532-4e452d3154422032323432-00000001)"
 DISK1="$(realpath /dev/disk/by-id/nvme-eui.e8238fa6bf530001001b448b47f32f0c)"
 BOOT="${DISK0}p1"
-DM0="${DISK0}p2"
-DM1="${DISK1}p1"
+ROOT="${DISK0}p2"
+AUX="${DISK1}p1"
 UUID="$(lsblk -dno UUID /dev/mapper/root)"
 
 sed -i -e '/^#en_US.UTF-8/s/^#//' -e '/^#ar_EG.UTF-8/s/^#//' /etc/locale.gen
@@ -18,7 +18,7 @@ printf '%s\n%s\n' 'KEYMAP=us' 'FONT=default8x16' | tee /etc/vconsole.conf
 printf '%s\n' 'aeiedamo' | tee /etc/hostname
 
 sed -i -e '/^#NoExtract/s/$/ boot\/intel-ucode.img/' -e '/^#NoExtract/s/^#// ' -e '/^#Color/s/^#//' -e '/^#Verbose/s/^#//' -e '/^#\[core-testing\]\|^#\[extra-testing\]/,+1s/^#//' /etc/pacman.conf
-printf '%s\n' 'Server = https://mirror.pkgbuild.com/$repo/os/$arch' | tee /etc/pacman.d/mirrorlist
+printf '%s\n' 'Server = https://fastly.mirror.pkgbuild.com/$repo/os/$arch' | tee /etc/pacman.d/mirrorlist
 sed -i -e 's/^MAKEFLAGS.*/MAKEFLAGS="-j8"/' -e '/^#BUILDDIR/s/^#//' -e '/^OPTIONS/s/debug/!&/' /etc/makepkg.conf
 
 sed -i -e '/^HOOKS/s/systemd/& btrfs/' -e '/^HOOKS/s/keymap/plymouth/' -e '/^HOOKS/s/filesystems/sd-encrypt &/' /etc/mkinitcpio.conf
@@ -36,7 +36,7 @@ bootctl install
 
 printf '%s\t%s\n' 'default' 'arch-linux.conf' | tee /boot/loader/loader.conf
 
-printf '%s\t%s\n%s\t%s\n%s\t%s\n%s\t%s%s%s %s%s%s %s %s%s %s %s %s\n' 'title' 'Arch Linux' 'linux' '/vmlinuz-linux' 'initrd' '/initramfs-linux.img' 'options' 'rd.luks.name=' "$(lsblk -dno UUID ${DM0})" '=root' 'rd.luks.name=' "$(lsblk -dno UUID ${DM1})" '=aux' 'rd.luks.options=tpm2-device=/dev/tpmrm0' 'root=UUID=' "${UUID}" 'rw rootflags=compress=zstd,subvol=/@' 'lsm=landlock,lockdown,yama,integrity,apparmor,bpf' 'quiet splash' | tee /boot/loader/entries/arch-linux.conf
+printf '%s\t%s\n%s\t%s\n%s\t%s\n%s\t%s%s%s %s%s%s %s %s%s %s %s %s\n' 'title' 'Arch Linux' 'linux' '/vmlinuz-linux' 'initrd' '/initramfs-linux.img' 'options' 'rd.luks.name=' "$(lsblk -dno UUID ${ROOT})" '=root' 'rd.luks.name=' "$(lsblk -dno UUID ${AUX})" '=aux' 'rd.luks.options=tpm2-device=/dev/tpmrm0' 'root=UUID=' "${UUID}" 'rw rootflags=compress=zstd,subvol=/@' 'lsm=landlock,lockdown,yama,integrity,apparmor,bpf' 'quiet splash' | tee /boot/loader/entries/arch-linux.conf
 
 cp /usr/share/edk2-shell/x64/Shell.efi /boot/shellx64.efi
 

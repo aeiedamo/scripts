@@ -18,7 +18,7 @@ printf '%s\n%s\n' 'KEYMAP=us' 'FONT=default8x16' | tee /etc/vconsole.conf
 printf '%s\n' 'aeiedamo' | tee /etc/hostname
 
 sed -i -e '/^#NoExtract/s/$/ boot\/intel-ucode.img/' -e '/^#NoExtract/s/^#// ' -e '/^#Color/s/^#//' -e '/^#Verbose/s/^#//' -e '/^#\[core-testing\]\|^#\[extra-testing\]/,+1s/^#//' /etc/pacman.conf
-printf '%s\n' 'Server = https://fastly.mirror.pkgbuild.com/$repo/os/$arch' | tee /etc/pacman.d/mirrorlist
+printf '%s\n' 'Server = https://mirror.pkgbuild.com/$repo/os/$arch' | tee /etc/pacman.d/mirrorlist
 sed -i -e 's/^MAKEFLAGS.*/MAKEFLAGS="-j8"/' -e '/^#BUILDDIR/s/^#//' -e '/^OPTIONS/s/debug/!&/' /etc/makepkg.conf
 
 sed -i -e '/^HOOKS/s/systemd/& btrfs/' -e '/^HOOKS/s/keymap/plymouth/' -e '/^HOOKS/s/filesystems/sd-encrypt &/' /etc/mkinitcpio.conf

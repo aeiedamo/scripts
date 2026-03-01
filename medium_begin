@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-blkdiscard -fz /dev/sda
+blkdiscard -f -z /dev/sda
 
 sgdisk -I -n 1:0:+1G -t 1:ef00 -c 1:'BOOT' -N 2 -t 2:8304 -c 2:'root' /dev/sda
 

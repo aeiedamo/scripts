@@ -23,12 +23,12 @@ sep
 
 # Formatting the disk
 echo "Zero-filling the disk..."
-blkdiscard -fz ${DISK}
+blkdiscard -f -z ${DISK}
 
 sep
 
 # Creating partitions
-sgdisk -n 1:0:+1G -t 1:0700 -n 2:0:0 -t 2:0700 $DISK
+sgdisk -I -n 1:0:+1G -t 1:0700 -N 2 -t 2:0700 $DISK
 
 sep
 
@@ -55,13 +55,13 @@ sep
 # Copy needed files to FAT32 formatted partition
 echo "Copying neeeded files..."
 cp /mnt/iso/* /mnt/usb/p1 2> /dev/null
-cp -r /mnt/iso/boot /mnt/usb/p1
-cp -r /mnt/iso/efi /mnt/usb/p1
-cp -r /mnt/iso/support /mnt/usb/p1
+cp -a /mnt/iso/boot /mnt/usb/p1
+cp -a /mnt/iso/efi /mnt/usb/p1
+cp -a /mnt/iso/support /mnt/usb/p1
 cp /mnt/iso/sources/boot.wim /mnt/usb/p1/sources/
 
 # Copying all files to NTFS formatted partition
-cp -RT /mnt/iso /mnt/usb/p2
+cp -a -T /mnt/iso /mnt/usb/p2
 
 sep
 # Sync block devices

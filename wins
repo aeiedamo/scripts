@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 if [ -z $1 ]; then
 	echo "You forgot the device name!"
@@ -10,67 +10,34 @@ if [ -z $2 ]; then
 	exit 1
 fi
 
-# Set disk block name and iso paths
-DISK=$1
-ISO=$2
+DISK="$1"
+ISO="$2"
+LABEL="$(isoinfo -d -i ${ISO} 2>/dev/null | grep '^Volume id' | cut -d ' ' -f 3)"
 
-sep(){
-	for i in {1..80}; do echo -n "-"; done
-	echo
-}
-
-sep
-
-# Formatting the disk
-echo "Zero-filling the disk..."
 blkdiscard -f -z ${DISK}
 
-sep
+sgdisk -I -n 1:0:+1G -t 1:0700 -c 1:'BOOT' -N 2 -t 2:0700 -c 2:"${LABEL}" ${DISK}
 
-# Creating partitions
-sgdisk -I -n 1:0:+1G -t 1:0700 -N 2 -t 2:0700 $DISK
+mkfs.fat -n 'BOOT' "${DISK}1"
+mkntfs -L "${LABEL}" -Q "${DISK}2"
 
-sep
-
-echo "Formatting partition No.1..."
-mkfs.fat "${DISK}1"
-echo "Formatting partition No.2..."
-mkntfs -Q "${DISK}2"
-
-sep
-
-# Mount ISO
-echo "Creating needed directories and mounting devices..."
 mkdir -p /mnt/iso
-mount ${ISO} /mnt/iso
+mount -r ${ISO} /mnt/iso
 
-# Mount partitions
-mkdir -p /mnt/usb/p{1,2}
-mount "${DISK}1" /mnt/usb/p1
-mount "${DISK}2" /mnt/usb/p2
-mkdir -p /mnt/usb/p1/sources
+mkdir -p /mnt/usb/boot /mnt/usb/install
+mount "${DISK}1" /mnt/usb/boot
+mount "${DISK}2" /mnt/usb/install
+mkdir -p /mnt/usb/boot/sources
 
-sep
+cp /mnt/iso/* /mnt/usb/boot 2>/dev/null
+cp -r /mnt/iso/boot /mnt/usb/boot
+cp -r /mnt/iso/efi /mnt/usb/boot
+cp -r /mnt/iso/support /mnt/usb/boot
+cp /mnt/iso/sources/boot.wim /mnt/usb/boot/sources/
 
-# Copy needed files to FAT32 formatted partition
-echo "Copying neeeded files..."
-cp /mnt/iso/* /mnt/usb/p1 2> /dev/null
-cp -a /mnt/iso/boot /mnt/usb/p1
-cp -a /mnt/iso/efi /mnt/usb/p1
-cp -a /mnt/iso/support /mnt/usb/p1
-cp /mnt/iso/sources/boot.wim /mnt/usb/p1/sources/
+cp -a -T /mnt/iso /mnt/usb/install
 
-# Copying all files to NTFS formatted partition
-cp -a -T /mnt/iso /mnt/usb/p2
-
-sep
-# Sync block devices
-echo "Syncing devices..."
 sync
 
-# Unmount all devices
-echo "Umounting devices"
-umount /mnt/iso /mnt/usb/p{1,2}
-
-echo "Finished!"
-exit 0
+umount /mnt/iso /mnt/usb/boot /mnt/usb/install
+rm -f -r /mnt/iso /mnt/usb/
